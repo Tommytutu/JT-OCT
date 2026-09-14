@@ -1,3 +1,5 @@
+from itertools import product
+
 import numpy as np
 import pytest
 
@@ -19,3 +21,17 @@ def test_three_methods_agree_on_toy_problem():
 def test_rejects_nonbinary_predictors():
     with pytest.raises(ValueError, match="binary"):
         make_problem([[0, 2], [1, 0]], [0, 1], depth=2)
+
+
+def test_all_methods_support_depth_greater_than_five():
+    X = np.asarray(list(product((0, 1), repeat=6)), dtype=np.uint8)
+    y = np.bitwise_xor.reduce(X, axis=1).astype(np.int32)
+    problem = make_problem(X, y, depth=6, penalty=0.0)
+    results = [solve(problem, method, time_limit=30, backend="cpu")
+               for method in ("JT-LP", "JT-CG", "JT-MP")]
+    assert all(result["status"] == "OPT" for result in results)
+    assert [result["UB"] for result in results] == pytest.approx([0.0] * 3)
+    assert all(result["metrics"]["split_nodes"] == 63 for result in results)
+    assert all(result["model_depth"] == 6 for result in results)
+    assert results[1]["implementation"] == "general_path_cluster_column_generation"
+    assert results[2]["implementation"] == "general_streaming_junction_tree_message_passing"

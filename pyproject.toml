@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jt-oct"
-version = "0.1.0"
+version = "0.2.0"
 description = "Junction-tree LP, column generation, and message passing for optimal classification trees"
 readme = "README.md"
 requires-python = ">=3.10"

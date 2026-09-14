@@ -94,9 +94,10 @@ def _paper_options(problem: Problem, backend: str, max_columns: int, *, message:
 
 def solve_jt_lp(problem: Problem, *, time_limit: float = 600,
                 max_columns: int = 200_000):
-    """Solve the explicit junction-tree LP and recover an optimal tree."""
+    """Solve the explicit junction-tree LP at any depth and recover a tree."""
     result = solve_full(Domain(problem), time_limit=time_limit, max_columns=max_columns)
-    result.update(method="JT-LP", implementation="explicit_configuration_lp")
+    result.update(method="JT-LP", implementation="general_explicit_junction_tree_lp",
+                  model_depth=problem.depth)
     return result
 
 
@@ -123,8 +124,9 @@ def solve_jt_cg(problem: Problem, *, time_limit: float = 600,
     else:
         result = solve_cg(Domain(problem), time_limit,
                           CGOptions(max_columns=max_columns))
-        implementation = "reference_path_cluster_cg"
-    result.update(method="JT-CG", implementation=implementation, backend=selected)
+        implementation = "general_path_cluster_column_generation"
+    result.update(method="JT-CG", implementation=implementation, backend=selected,
+                  model_depth=problem.depth)
     return result
 
 
@@ -137,7 +139,7 @@ def solve_jt_mp(problem: Problem, *, time_limit: float = 600,
         result = solve_contracted_cg(problem, selected, time_limit,
                                      _paper_options(problem, selected, max_columns, message=True))
         implementation = "adaptive_contracted_message_passing"
-    elif problem.depth <= 3 and _native("d3_optimized.dll"):
+    elif problem.depth in (2, 3) and _native("d3_optimized.dll"):
         from .d3_optimized import solve_jt_dp_shallow_cpp, solve_jt_dp_shallow_gpu
         solver = solve_jt_dp_shallow_gpu if selected == "gpu" else solve_jt_dp_shallow_cpp
         result = solver(problem, time_limit=time_limit)
@@ -145,8 +147,9 @@ def solve_jt_mp(problem: Problem, *, time_limit: float = 600,
     else:
         result = solve_jt_dp(Domain(problem), time_limit=time_limit,
                              max_columns=max_columns)
-        implementation = "reference_path_cluster_message_passing"
-    result.update(method="JT-MP", implementation=implementation, backend=selected)
+        implementation = "general_streaming_junction_tree_message_passing"
+    result.update(method="JT-MP", implementation=implementation, backend=selected,
+                  model_depth=problem.depth)
     return result
 
 

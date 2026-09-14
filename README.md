@@ -65,6 +65,33 @@ python examples\basic_usage.py
 
 The methods should return the same optimal objective. JT-LP may become too large as depth and the number of binary predicates increase; JT-CG and JT-MP use the optimized contracted implementation at depths four and five when the native extensions are available.
 
+## Depth support
+
+The junction-tree model and all three public solvers accept every integer depth
+`D >= 1`; there is no hard cutoff at depth five. The implementations are selected
+as follows:
+
+| Depth | Implementation selected when available |
+|---|---|
+| 1 | General path-cluster formulation |
+| 2--3 | Specialized shallow JT-CG/JT-MP kernels |
+| 4--5 | Depth-three private-subtree contraction used in the experiments |
+| 6 and above | General path-cluster JT-LP, JT-CG, or streaming JT-MP |
+
+The general formulation creates \(2^{D-1}\) path clusters before accounting for
+their local configurations. It is exact at every depth, but its running time and
+memory can therefore grow exponentially, as expected for the NP-hard OCT problem.
+The depth-specific native code changes computational efficiency only; it does not
+change the model or its feasible trees.
+
+The following example solves six-bit parity using all three general methods. Zero
+training error requires all six levels and 63 split nodes, so this checks actual
+depth-six behavior rather than a shallow tree under a loose depth limit:
+
+```powershell
+python examples\arbitrary_depth.py
+```
+
 ## Command line
 
 The first CSV column is treated as the class label by default:
@@ -79,7 +106,7 @@ Use `--label class_name` when the label is not the first column. The command pri
 
 Input predictors must contain only 0 and 1. Labels may be strings or integers and are encoded internally. By default, a feature cannot be used twice on one root-to-leaf path, early stopping is enabled, and the minimum leaf size is zero.
 
-The result dictionary includes `status`, certified bounds `LB` and `UB`, the recovered `tree`, independently evaluated `metrics`, and the selected `implementation`.
+The result dictionary includes `status`, certified bounds `LB` and `UB`, the recovered `tree`, independently evaluated `metrics`, `model_depth`, and the selected `implementation`.
 
 ## Verification
 
