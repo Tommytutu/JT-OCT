@@ -45,3 +45,51 @@ Windows下可运行以下命令编译优化后的CPU后端：
 ```
 
 编译需要MSVC Build Tools、Gurobi 13 C++ SDK及有效的Gurobi许可证。GPU版本还需要CUDA和CuPy。
+
+## 默认参数
+
+公开接口求解以下目标：
+
+\[
+\min_T\ \frac{1}{n}\sum_{i=1}^n\mathbf 1\{T(x_i)\ne y_i\}
++\lambda |B(T)|,
+\]
+
+其中 \(B(T)\) 是分裂节点集合。默认参数如下：
+
+| 参数 | 默认值 | 含义 |
+|---|---:|---|
+| `method` | `JT-MP` | 精确min-sum消息传递 |
+| `depth` | Python接口必须指定；命令行为`2` | 分类树最大深度 |
+| `penalty` | `0.0` | 每个分裂节点的惩罚 \(\lambda\) |
+| `time_limit` | `600`秒 | 单次求解的墙钟时间限制 |
+| `max_columns` | `200000` | 配置或活跃列数量上限 |
+| `backend` | `auto` | 自动选择计算后端 |
+| `min_leaf` | `0` | 叶节点的最小样本数 |
+| `no_repeat` | `True` | 同一根到叶路径不重复使用特征 |
+| `early_stop` | `True` | 允许在最大深度前停止并预测 |
+| 样本权重 | `1/n` | 每个样本对误分类率的贡献相同 |
+| CSV标签列 | 第一列 | 可通过`--label`或`label_column`修改 |
+
+当`backend="auto"`时，如果CUDA设备可用，并且特征数不少于48或样本数不少于10,000，则选择GPU计算；否则优化实现使用8个OpenMP线程进行CPU计算。深度大于5时使用通用路径簇实现，后端选择不改变该模型。
+
+对应的Python调用为：
+
+```python
+problem = make_problem(
+    X,
+    y,
+    depth=6,          # Python接口必须指定
+    penalty=0.0,
+    no_repeat=True,
+    min_leaf=0,
+)
+
+result = solve(
+    problem,
+    method="JT-MP",
+    time_limit=600,
+    max_columns=200_000,
+    backend="auto",
+)
+```

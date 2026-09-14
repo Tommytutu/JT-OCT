@@ -102,6 +102,59 @@ jt-oct examples\toy_binary.csv --method JT-CG --depth 2 --penalty 0.01 --backend
 
 Use `--label class_name` when the label is not the first column. The command prints JSON; pass `--output outputs/result.json` to save it.
 
+## Default parameters
+
+The public interface minimizes
+
+\[
+\frac{1}{n}\sum_{i=1}^n \mathbf 1\{T(x_i)\ne y_i\}
++\lambda |B(T)|,
+\]
+
+where \(B(T)\) is the set of split nodes. The defaults are:
+
+| Parameter | Default | Meaning |
+|---|---:|---|
+| `method` | `JT-MP` | Exact min-sum message passing |
+| `depth` | Required by `make_problem`; `2` in the CLI | Maximum tree depth |
+| `penalty` | `0.0` | Penalty \(\lambda\) per split node |
+| `time_limit` | `600` seconds | Wall-clock limit for one solve |
+| `max_columns` | `200000` | Maximum number of configurations or active columns |
+| `backend` | `auto` | Automatic computational backend selection |
+| `min_leaf` | `0` | Minimum observations reaching a leaf |
+| `no_repeat` | `True` | Forbid reuse of a feature on one root-to-leaf path |
+| `early_stop` | `True` | Permit prediction before the maximum depth |
+| observation weight | `1/n` | Uniform contribution to the misclassification rate |
+| CSV label column | first column | Override with `--label` or `label_column` |
+
+With `backend="auto"`, GPU evaluation is selected when a CUDA device is
+available and either the number of features is at least 48 or the number of
+observations is at least 10,000. Otherwise, the optimized code uses CPU
+evaluation with eight OpenMP threads. At depths above five, the solver uses the
+general path-cluster implementation; the backend choice does not change that
+formulation.
+
+An explicit Python call with the defaults is:
+
+```python
+problem = make_problem(
+    X,
+    y,
+    depth=6,          # required in the Python interface
+    penalty=0.0,
+    no_repeat=True,
+    min_leaf=0,
+)
+
+result = solve(
+    problem,
+    method="JT-MP",
+    time_limit=600,
+    max_columns=200_000,
+    backend="auto",
+)
+```
+
 ## Input and output
 
 Input predictors must contain only 0 and 1. Labels may be strings or integers and are encoded internally. By default, a feature cannot be used twice on one root-to-leaf path, early stopping is enabled, and the minimum leaf size is zero.
