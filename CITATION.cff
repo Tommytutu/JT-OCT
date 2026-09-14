@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated paper."
+title: "JT-OCT: Junction-Tree Optimization for Classification Trees"
+type: software
+authors:
+  - family-names: Tu
+    given-names: Jiancheng
+  - family-names: Fan
+    given-names: Wenqi
+version: 0.1.0
+date-released: 2026-09-14

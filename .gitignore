@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
+outputs/
+jt_oct/_native/*.dll
+jt_oct/_native/*.exp
+jt_oct/_native/*.lib
+jt_oct/_native/*.obj
+*.obj
+*.exp
+*.lib
+.idea/
+.vscode/

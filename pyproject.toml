@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jt-oct"
+version = "0.1.0"
+description = "Junction-tree LP, column generation, and message passing for optimal classification trees"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Jiancheng Tu"}, {name = "Wenqi Fan"}]
+dependencies = ["numpy>=1.24", "scipy>=1.11", "gurobipy>=13.0"]
+
+[project.optional-dependencies]
+gpu = ["cupy-cuda12x>=13.0"]
+test = ["pytest>=8"]
+
+[project.scripts]
+jt-oct = "jt_oct.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["jt_oct*"]
+
+[tool.setuptools.package-data]
+jt_oct = ["_native/*.dll"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
