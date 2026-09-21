@@ -1,4 +1,8 @@
-"""Problem-size policies for CPU and GPU subtree evaluation."""
+"""Measured-profile JT-DP portfolio. Selection never uses a dataset identifier.
+
+The reference policy supplies the default configuration. A frozen
+policy can select another action. Training and inference share this module.
+"""
 from functools import lru_cache
 from pathlib import Path
 import json

@@ -1,7 +1,6 @@
-param([string]$GurobiRoot = $env:GUROBI_HOME)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$gurobi = if ($GurobiRoot) { $GurobiRoot } else { 'C:\gurobi1300\win64' }
+$gurobi = if ($env:GUROBI_HOME) { $env:GUROBI_HOME } else { 'C:\gurobi1300\win64' }
 $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
 $install = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
 if (-not $install) { throw 'Visual Studio C++ toolchain not found' }

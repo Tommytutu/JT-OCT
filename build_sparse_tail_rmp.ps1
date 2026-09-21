@@ -10,3 +10,4 @@ $CrVcVars = Join-Path $CrInstall 'VC\Auxiliary\Build\vcvars64.bat'
 $CrCommand = '"' + $CrVcVars + '" >nul && cl /nologo /O2 /MD /EHsc /std:c++17 /LD /I"' + $GurobiRoot + '\include" /Fo"' + $CrOutput + '\sparse_tail_rmp.obj" "' + $CrRoot + '\native\sparse_tail_rmp.cpp" /link /LIBPATH:"' + $GurobiRoot + '\lib" gurobi_c++md2017.lib gurobi130.lib /OUT:"' + $CrOutput + '\sparse_tail_rmp.dll" /IMPLIB:"' + $CrOutput + '\sparse_tail_rmp.lib"'
 cmd.exe /d /s /c $CrCommand
 if ($LASTEXITCODE -ne 0) { throw 'Contracted Gurobi RMP build failed' }
+

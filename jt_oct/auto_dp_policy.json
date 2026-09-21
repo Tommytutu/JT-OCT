@@ -2,19 +2,5 @@
   "version": "representative-dp-v1",
   "tree": {
     "action": "reference"
-  },
-  "actions": [
-    "reference",
-    "cpu",
-    "gpu",
-    "fast_gpu",
-    "prune_gpu"
-  ],
-  "features": [
-    "depth",
-    "log_n",
-    "log_F",
-    "K",
-    "positive_penalty"
-  ]
+  }
 }

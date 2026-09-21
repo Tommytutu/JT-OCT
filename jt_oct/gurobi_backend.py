@@ -1,7 +1,8 @@
-"""The sole mathematical-programming backend: Gurobi, one thread.
+"""Gurobi backend for the existing reference solvers, one thread.
 
 SciPy is used only to store sparse matrices. No SciPy/HiGHS optimizer is used.
 Duals are exposed only after an optimal continuous solve.
+The optional cuPDLPx entry point uses the separate pdlp_backend module.
 """
 from types import SimpleNamespace
 import math

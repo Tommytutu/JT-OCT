@@ -459,10 +459,18 @@ def solve_jt_dp_d3_cpp(p, time_limit=600, threads=0):
 
 
 def _configure_cupy_runtime():
-    """Configure a CUDA installation selected by environment variables."""
+    """Load an optional wheel-provided CUDA runtime on Windows.
+
+    NVRTC cannot reliably open include files through a non-ASCII installation
+    path.  ``setup_gpu_runtime.py`` therefore prepares an ASCII cache root; an
+    explicit JT_OCT_CUDA_ROOT or a system CUDA_PATH takes precedence.
+    """
     if os.name != "nt":
         return
-    candidate = os.environ.get("JT_OCT_CUDA_ROOT") or os.environ.get("CUDA_PATH")
+    candidate = os.environ.get("JT_OCT_CUDA_ROOT")
+    if not candidate:
+        cached = Path.home() / ".cache" / "jt_oct" / "cuda12_runtime"
+        candidate = str(cached) if cached.exists() else os.environ.get("CUDA_PATH")
     if not candidate:
         return
     root = Path(candidate)

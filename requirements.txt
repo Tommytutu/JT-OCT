@@ -1,5 +1,4 @@
-numpy>=1.24
-scipy>=1.11
-gurobipy>=13.0
-
-psutil>=5.9
+numpy==2.5.2
+scipy==1.18.1
+gurobipy==13.0.3
+psutil==7.2.2

@@ -109,7 +109,12 @@ class ContractOptions:
 
 def automatic_contract_configuration(n, features, classes, depth, options=None,
                                      gpu_available=True):
-    """Select the backend and evaluation options from problem dimensions."""
+    """Return the measured-profile D4/D5 backend and safe exact options.
+
+    Small problems avoid CUDA startup.  The delayed-RMP policy is limited to
+    the two validated high-dimensional binary profiles (FICO/Spambase scale),
+    expressed only through problem features rather than dataset identities.
+    """
     o=options or ContractOptions()
     use_gpu=bool(gpu_available and (int(features)>=48 or int(n)>=10000))
     delayed=bool(int(depth)==5 and int(classes)==2 and
