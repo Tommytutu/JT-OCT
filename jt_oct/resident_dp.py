@@ -88,6 +88,21 @@ class ResidentGPU:
         if host is not None: result.set(np.ascontiguousarray(host))
         return result
 
+    def prepare_compact(self):
+        if hasattr(self,'compact_d3'):return
+        root=Path(__file__).resolve().parents[1]/'native'
+        k=len(self.p.labels);planes=k if k>2 else 1
+        source=(root/('resident_multiclass.cu' if k>2 else 'resident_dp.cu')).read_text().replace('@CLASSES@',str(k))
+        prefix='#define COMPACT_INPUT\n#define COMPACT_LABELS '+str(planes)+'\n'
+        for name in ('d2','d3'):
+            kernel=self.cp.RawKernel(prefix+source,'resident_'+name,options=('--std=c++11',))
+            kernel.compile();setattr(self,'compact_'+name,kernel)
+        extra=(root/'resident_fused.cu').read_text().replace('@CLASSES@',str(k))
+        self.compact_fused=self.cp.RawKernel(prefix+source+'\n'+extra,'resident_d3_fused',options=('--std=c++11',))
+        self.compact_fused.compile()
+        self.compact_pack=self.cp.RawKernel((root/'resident_compact.cu').read_text(),'compact_rows',options=('--std=c++11',))
+        self.compact_pack.compile()
+
     def metadata(self, request, depth):
         p, o, owner = self.p, self.o, self.owner
         rows = request.get('rows', p.all_rows)
@@ -203,6 +218,34 @@ class ResidentGPU:
         return value
 
     def solve_many(self,requests,time_limit=100,depth=3,audit=None):
+        if not self.o.gpu_compact_rows or len(requests)<2:
+            return self._solve_many_ordered(requests,time_limit,depth,audit)
+        # Bucket by powers of two local words, preserving public result order.
+        # This bounds padding while retaining batching and existing prefetch.
+        clock=Deadline(time_limit);buckets={};answers=[None]*len(requests)
+        for i,request in enumerate(requests):
+            words=max(1,(len(request.get('rows',self.p.all_rows))+63)//64)
+            buckets.setdefault((words-1).bit_length(),[]).append(i)
+        groups=list(buckets.values())
+        if self.o.gpu_bucket_min:
+            groups=[buckets[k] for k in sorted(buckets)]
+            def width(group):return max(max(1,(len(requests[i].get('rows',self.p.all_rows))+63)//64) for i in group)
+            while len(groups)>1:
+                widths=[width(g) for g in groups];choices=[]
+                for j in range(len(groups)-1):
+                    a,b=groups[j:j+2];wa,wb=widths[j:j+2]
+                    # Only merge neighbors when one is small, and at most
+                    # double either group's padded width. Never drop a state.
+                    if min(len(a),len(b))>=self.o.gpu_bucket_min or wb>2*wa:continue
+                    choices.append(((wb-wa)*len(a),j))
+                if not choices:break
+                _,j=min(choices);groups[j:j+2]=[groups[j]+groups[j+1]]
+        for indices in groups:
+            out=self._solve_many_ordered([requests[i] for i in indices],max(0,clock.end-time.perf_counter()),depth,audit)
+            for i,answer in zip(indices,out):answers[i]=answer
+        return answers
+
+    def _solve_many_ordered(self,requests,time_limit=100,depth=3,audit=None):
         chunk=self.o.gpu_pipeline_chunk
         if not chunk or len(requests)<=chunk:
             return self._solve_chunk(requests,time_limit,depth,audit)
@@ -252,6 +295,19 @@ class ResidentGPU:
                 tick = time.perf_counter()
                 cp, p, W, B = self.cp, self.p, self.W, len(pending)
                 F = max(len(r['features']) for r in pending)
+                local_words=max(1,(max(len(r['rows']) for r in pending)+63)//64)
+                # Avoid allocating a dictionary larger than the global input
+                # for batches with little reduction; cap scratch storage at 128 MiB.
+                planes=len(p.labels) if len(p.labels)>2 else 1
+                compact_ratio=local_words/W
+                compact=bool(self.o.gpu_compact_rows and
+                    B>=self.o.gpu_compact_min_batch and
+                    compact_ratio<=self.o.gpu_compact_max_ratio and
+                    B*local_words*(8*(F+planes)+256)<=128*1024**2)
+                if compact:
+                    self.prepare_compact();W=local_words
+                    sample_ids=np.full((B,W*64),-1,dtype=np.int32)
+                    global_features=np.zeros((B,F),dtype=np.int32)
                 masks = np.empty((B, W), dtype=np.uint64)
                 indices = np.zeros((B, W), dtype=np.int32)
                 nw = np.full(B, -1, dtype=np.int32)
@@ -263,17 +319,35 @@ class ResidentGPU:
                 stops = np.full((B, 2, F), INF)
                 for j, r in enumerate(pending):
                     n = len(r['features'])
-                    masks[j] = np.frombuffer(r['rows'].mask.to_bytes(W*8, 'little'), dtype=np.uint64)
+                    if compact:
+                        count=len(r['rows'])
+                        packed=np.frombuffer(r['rows'].mask.to_bytes(self.W*8,'little'),dtype=np.uint8)
+                        sample_ids[j,:count]=np.flatnonzero(np.unpackbits(packed,bitorder='little'))
+                        global_features[j,:n]=r['features']
+                        masks[j]=np.frombuffer(((1<<count)-1).to_bytes(W*8,'little'),dtype=np.uint64)
+                    else:masks[j] = np.frombuffer(r['rows'].mask.to_bytes(W*8, 'little'), dtype=np.uint64)
                     nz = np.flatnonzero(masks[j])
                     sparse = self.o.sparse_words or (self.o.gpu_adaptive_words and len(nz) < self.o.gpu_sparse_threshold*W)
                     if sparse:
                         indices[j, :len(nz)] = nz; nw[j] = len(nz)
-                    r['stats'].update(sparse_words_used=bool(sparse), active_words=len(nz), global_words=W,
+                    r['stats'].update(compact_rows_used=compact,
+                                      compact_rows_requested=bool(self.o.gpu_compact_rows),
+                                      compact_batch_eligible=B>=self.o.gpu_compact_min_batch,
+                                      compact_word_ratio=compact_ratio,local_words=W,
+                                      sparse_words_used=bool(sparse), active_words=len(nz), global_words=self.W,
                                       batch_size=B, gpu_cost_kernel='resident_d'+str(depth))
-                    features[j, :n] = r['features']; costs[j, :, :n] = r['costs']
+                    features[j, :n] = np.arange(n) if compact else r['features']; costs[j, :, :n] = r['costs']
                     allowed[j, :, :n] = r['allowed']; floors[j] = r['floors']
                     dominated[j, :, :n] = r['dominated']; stops[j, :, :n] = r['side_stop']
                 args = [self.zero, self.positive]
+                if compact:
+                    ids_d=self.buffer('compact_ids',sample_ids.shape,sample_ids.dtype,sample_ids)
+                    fs_d=self.buffer('compact_features',global_features.shape,global_features.dtype,global_features)
+                    zero_d=self.buffer('compact_zero',(B,F,W),np.uint64)
+                    labels_d=self.buffer('compact_labels',(B,planes,W),np.uint64)
+                    self.compact_pack((W,F+planes,B),(32,),(self.zero,self.positive,ids_d,fs_d,
+                        np.int32(self.W),np.int32(W),np.int32(F),np.int32(planes),zero_d,labels_d))
+                    args=[zero_d,labels_d]
                 for name, value in [('masks', masks), ('indices', indices), ('nw', nw),
                                     ('features', features), ('costs', costs), ('allowed', allowed)]:
                     args.append(self.buffer(name, value.shape, value.dtype, value))
@@ -287,7 +361,7 @@ class ResidentGPU:
                 cp.cuda.Stream.null.synchronize()
                 times['pack_seconds'] = time.perf_counter()-tick
                 # Check the shared deadline between bounded batches of feature pairs.
-                tile = min(self.o.tile_pairs, 256)
+                tile = min(self.o.tile_pairs, self.o.gpu_pair_tile)
                 fused = depth==3 and self.o.gpu_cost_strategy!='baseline'
                 max_words=int(np.max(np.where(nw<0,W,nw)))
                 shared_bytes=8*max_words if fused and self.o.gpu_cost_strategy=='shared' else 0
@@ -295,6 +369,7 @@ class ResidentGPU:
                 if shared_bytes>16384:shared_bytes=0
                 for r in pending:
                     r['stats'].update(gpu_cost_strategy=self.o.gpu_cost_strategy,
+                        physical_pair_tile=tile,
                         pair_cache_bytes=shared_bytes,pair_cache_fallback=bool(fused and self.o.gpu_cost_strategy=='shared' and not shared_bytes))
                 tick=time.perf_counter();sync_count=0
                 for step,start in enumerate(range(0, F*F, tile)):
@@ -305,6 +380,7 @@ class ResidentGPU:
                     ints += [start, count]
                     outputs = [values, tail, reasons] if depth == 3 else [values]
                     kernel = self.fused if fused else self.d3 if depth == 3 else self.d2
+                    if compact:kernel=self.compact_fused if fused else self.compact_d3 if depth==3 else self.compact_d2
                     kernel_args=tuple(args)+tuple(np.int32(x) for x in ints)+(np.float64(p._uniform_weight),)+tuple(outputs)
                     if fused:kernel_args+=(np.int32(bool(shared_bytes)),)
                     kernel((count*blocks, B), (256,), kernel_args,shared_mem=shared_bytes)
@@ -319,23 +395,8 @@ class ResidentGPU:
                     for j, r in enumerate(pending):
                         n = len(r['features'])
                         audit(r['features'].copy(), cp.asnumpy(values[j, :, :n, :n]), cp.asnumpy(tail[j, :, :n, :n]))
-                sums = values[:, ::2]+values[:, 1::2] if depth == 3 else values
-                g = cp.argmin(sums, axis=3)
-                side = cp.take_along_axis(sums, g[..., None], axis=3)[..., 0]
-                stop_d = cp.asarray(stops)
-                g = cp.where(stop_d <= side, -1, g)
-                side = cp.minimum(side, stop_d)
-                root_values = side.sum(axis=1)
-                f = cp.argmin(root_values, axis=1)
-                batch = cp.arange(B)
-                # Transfer only each winning value and seven actions, in one copy.
-                answer = cp.full((B, 8), -1., dtype=cp.float64)
-                answer[:, 0] = root_values[batch, f]; answer[:, 1] = f
-                for a in (0, 1):
-                    ga = g[batch, a, f]; answer[:, 2+a] = ga
-                    if depth == 3:
-                        for b in (0, 1): answer[:, 4+2*a+b] = tail[batch, 2*a+b, f, cp.maximum(ga, 0)]
-                answer = cp.asnumpy(answer)
+                answer = self.join(values,tail,stops,depth)
+                for r in pending:r['stats']['fused_join_used']=self.o.gpu_fused_join
                 times['join_seconds'] = time.perf_counter()-tick
                 tick = time.perf_counter()
                 for r, raw in zip(pending, answer):
@@ -373,3 +434,27 @@ class ResidentGPU:
             result.append(dict(status=status, value=value, tree=tree, seconds=clock.elapsed(), stats=r['stats'],
                                timings={k: v/max(1, len(records)) for k, v in times.items()}))
         return result
+
+    def join(self,values,tail,stops,depth):
+        cp=self.cp;B,_,F,_=values.shape
+        if self.o.gpu_fused_join:
+            if not hasattr(self,'join_kernel'):
+                source=(Path(__file__).resolve().parents[1]/'native/resident_join.cu').read_text()
+                self.join_kernel=cp.RawKernel(source,'resident_join',options=('--std=c++11',))
+                self.join_kernel.compile()
+            stop_d=self.buffer('join_stops',stops.shape,stops.dtype,stops)
+            answer=self.buffer('join_answer',(B,8),np.float64)
+            self.join_kernel((B,),(256,),(values,tail,stop_d,np.int32(F),np.int32(depth),answer))
+        else:
+            sums=values[:,::2]+values[:,1::2] if depth==3 else values
+            g=cp.argmin(sums,axis=3)
+            side=cp.take_along_axis(sums,g[...,None],axis=3)[...,0]
+            stop_d=cp.asarray(stops);g=cp.where(stop_d<=side,-1,g);side=cp.minimum(side,stop_d)
+            root_values=side.sum(axis=1);f=cp.argmin(root_values,axis=1);batch=cp.arange(B)
+            answer=cp.full((B,8),-1.,dtype=cp.float64)
+            answer[:,0]=root_values[batch,f];answer[:,1]=f
+            for a in (0,1):
+                ga=g[batch,a,f];answer[:,2+a]=ga
+                if depth==3:
+                    for b in (0,1):answer[:,4+2*a+b]=tail[batch,2*a+b,f,cp.maximum(ga,0)]
+        return cp.asnumpy(answer)

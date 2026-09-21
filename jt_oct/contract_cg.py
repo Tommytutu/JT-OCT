@@ -94,6 +94,29 @@ class ContractOptions:
     suppress_jt_certificate: bool = False  # disable global JT certificate and its root exclusion
     cost_mode: str = 'lazy'
     master_mode: str = 'cg'
+    memory_limit_bytes: int = 48 * 1024**3
+    bound_feedback: bool = False
+    cutoff_node_budget: int = 1
+    gpu_compact_rows: bool = True
+    gpu_compact_min_batch: int = 8
+    gpu_compact_max_ratio: float = .75
+    gpu_pair_tile: int = 4096
+    gpu_bucket_min: int = 8
+    gpu_fused_join: bool = True
+    state_screen: bool = True
+    similarity_refs: int = 0
+
+
+def automatic_contract_configuration(n, features, classes, depth, options=None,
+                                     gpu_available=True):
+    """Select the backend and evaluation options from problem dimensions."""
+    o=options or ContractOptions()
+    use_gpu=bool(gpu_available and (int(features)>=48 or int(n)>=10000))
+    delayed=bool(int(depth)==5 and int(classes)==2 and
+                 int(features)>=100 and int(n)<100000)
+    return dict(backend='gpu' if use_gpu else 'cpp',options=replace(o,
+        resident_gpu=use_gpu,oracle_batch=64 if use_gpu else 16,
+        rmp_every_batches=4 if delayed else 1,class_bound=int(classes)>2))
 
 
 def _capacity_batch(ids, reduced_cost, active_count, limit, blocks, block_size):
@@ -121,12 +144,21 @@ class PricingState:
     def __init__(self, p, engine, options, clock):
         self.p, self.engine, self.options = p, engine, options
         self.domain = Domain(p, tail_depth=options.tail_depth)
-        if self.domain.M not in (2,4):raise ValueError('Dense prefix state requires two or four blocks')
         self.M, self.F, self.K = self.domain.M, p.F, len(p.labels)
         self.A = self.F + self.K
-        self.P = self.A if self.M == 2 else self.F*self.A+self.K
-        self.R = self.P if self.M == 2 else 2*self.P+self.A
+        counts=[1]
+        for _ in range(self.domain.h):counts.append(self.F*counts[-1]+self.K)
+        self.counts=counts;self.P=counts[-1]
+        self.edge_offsets=[];self.R=0
+        for size in self.domain.separators:
+            self.edge_offsets.append(self.R);self.R+=counts[size]
         self.N = self.M*self.P
+        # This dense exact domain is deliberate for LP-SC and for the current
+        # certified deep-CG implementation. Reject before Python/native/Gurobi
+        # allocations can cross the campaign's 48 GiB boundary.
+        estimated=self.N*49+self.R*24
+        if options.memory_limit_bytes and estimated>options.memory_limit_bytes:
+            raise CapacityExceeded(f'MEMORY_PRECHECK dense_state_bytes={estimated} limit={options.memory_limit_bytes}')
         self.low = np.full(self.N, np.inf); self.high = self.low.copy()
         self.private = np.full(self.N, -1, dtype=np.int32)
         self.prefix_cost = np.zeros(self.N)
@@ -152,16 +184,21 @@ class PricingState:
                 self.low[id], self.high[id] = pc+record.lower, pc+record.upper
         for group in self.groups: group['ids'] = np.asarray(group['ids'], dtype=np.int32)
         self.certified = np.isfinite(self.high) & (self.low >= self.high-1e-12)
-        s = np.arange(self.P)
-        self.roots = np.where(s < self.F*self.A, s//self.A, self.F+s-self.F*self.A)
+        if self.domain.h==1:
+            self.roots=np.arange(self.P)
+        else:
+            s=np.arange(self.P);cut=self.F*self.counts[-2]
+            self.roots=np.where(s<cut,s//self.counts[-2],self.F+s-cut)
 
     def signature(self, prefix):
-        tag, value = prefix[0]
-        r = value if tag == SPLIT else self.F+self.p.labels.index(value)
-        if self.M == 2: return r
-        if tag == STOP: return self.F*self.A+self.p.labels.index(value)
-        tag, value = prefix[1]
-        return r*self.A+(value if tag == SPLIT else self.F+self.p.labels.index(value))
+        value=0
+        for j,(tag,action) in enumerate(prefix):
+            remaining=len(prefix)-j
+            if tag==STOP:
+                return value+self.F*self.counts[remaining-1]+self.p.labels.index(action)
+            if tag!=SPLIT:raise ValueError('INACTIVE cannot precede a signature decision')
+            value+=action*self.counts[remaining-1]
+        return value
 
     def column(self, id):
         prefix, splits = self.meta[id]
@@ -194,6 +231,8 @@ class PricingState:
         return ids
 
     def reduced(self, costs, alpha, pi):
+        if self.M not in (2,4):
+            raise RuntimeError('Deep reduced costs must be computed by the native C++ master')
         values = costs.reshape(self.M,self.P).copy()-np.asarray(alpha)[:,None]
         if self.M == 2:
             values[0] -= pi; values[1] += pi
@@ -213,7 +252,7 @@ class PricingState:
             if not common: raise AssertionError('No compatible RMP support')
             s = min(common, key=lambda s: self.high[s]+self.high[self.P+s])
             ids = [s,self.P+s]
-        else:
+        elif self.M==4:
             sides = []
             for a in (0,1):
                 found = {}
@@ -225,12 +264,20 @@ class PricingState:
             if not common: raise AssertionError('No compatible RMP root support')
             r = min(common, key=lambda r: sides[0][r][0]+sides[1][r][0])
             ids = [q*self.P+sides[q//2][r][1] for q in range(4)]
+        else:
+            raise RuntimeError('Deep RMP recovery must use the native C++ selection')
         tree = self.domain.recover([self.column(id) for id in ids])
         return tree, float(sum(self.high[id] for id in ids))
 
     def messages(self, costs):
         """Exact upper-level min-sum over complete signatures, with local bounds."""
         c = costs.reshape(self.M,self.P)
+        if self.M>4:
+            from .deep_structural_native import path_opt
+            value,selected=path_opt(c,self.F,self.K,self.domain.h)
+            ids=None if selected is None else np.asarray(
+                [q*self.P+int(s) for q,s in enumerate(selected)],dtype=np.int32)
+            return np.asarray([value]),np.asarray([ids],dtype=object),None,None
         if self.M == 2:
             roots = c[0]+c[1]
             ids = np.stack([np.arange(self.P),self.P+np.arange(self.P)],axis=1)
@@ -244,9 +291,27 @@ class PricingState:
         ids = np.stack([q*self.P+signatures[q//2] for q in range(4)],axis=1)
         return sides.sum(axis=0),ids,sides,pairs
 
+    def min_marginals(self, costs, info=None):
+        """Full-domain optimum conditioned on each signature (D4/D5)."""
+        info=self.messages(costs) if info is None else info
+        if self.M==2:return np.tile(info[0],2)
+        if self.M!=4:raise ValueError('State min-marginals require two or four clusters')
+        sides,pairs=info[2],info[3]
+        # Avoid total-minus-local: infeasible signatures may have infinite cost.
+        return np.repeat(pairs+sides[::-1,self.roots],2,axis=0).reshape(-1)
+
     def compatible_groups(self, limit, incumbent, low_info, high_info):
         """Prioritize sibling pairs for promising compatible roots; no domain removal."""
         root_low,low_ids,side_low,pair_low = low_info
+        if self.M>4:
+            selected=[];seen=set()
+            if low_ids is not None and len(low_ids):
+                for id in low_ids[0]:
+                    gid=int(self.private[int(id)])
+                    if gid>=0 and gid not in seen and not self.groups[gid]['record'].exact:
+                        selected.append(gid);seen.add(gid)
+                        if len(selected)>=limit:return selected
+            return selected
         root_high,_,side_high,pair_high = high_info
         viable = np.flatnonzero(root_low < incumbent-1e-9)
         if self.options.root_order=='bound':
@@ -282,13 +347,34 @@ class PricingState:
         return selected
 
 
-def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=None):
-    if p.depth not in (4,5) or p._uniform_weight is None or not p.early_stop or p.allowed or p.split_costs:
-        raise ValueError('D3-contracted CG requires D4/D5, uniform weights, STOP and shared node costs/features')
+def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress=None):
+    if p.depth not in (4,5,6,7) or p._uniform_weight is None or not p.early_stop or p.allowed or p.split_costs:
+        raise ValueError('D3-contracted CG requires D4--D7, uniform weights, STOP and shared node costs/features')
     o = options or ContractOptions()
-    if o.cost_mode not in ('lazy','eager') or o.master_mode not in ('cg','full','message'):
+    automatic = backend=='auto'
+    if automatic:
+        from .auto_dp import hardware
+        selected=automatic_contract_configuration(p.n,p.F,len(p.labels),p.depth,o,
+            hardware()['gpu_available'])
+        backend,o=selected['backend'],selected['options']
+    if backend not in ('cpp','gpu'):raise ValueError('Contracted CG backend must be auto, cpp or gpu')
+    if o.gpu_pair_tile<1 or o.gpu_bucket_min<0:raise ValueError('Invalid GPU dispatch options')
+    if o.gpu_compact_min_batch<1 or not 0<o.gpu_compact_max_ratio<1:
+        raise ValueError('Invalid compact-row profitability thresholds')
+    if o.cutoff_node_budget<0:raise ValueError('Nonnegative cutoff node budget required')
+    if o.similarity_refs<0:raise ValueError('Nonnegative similarity reference count required')
+    screen_states=bool(o.state_screen and p.depth in (4,5) and o.tail_depth==3 and
+        o.cost_mode=='lazy' and o.master_mode=='cg' and not o.suppress_jt_certificate)
+    if o.similarity_refs and (p.depth not in (4,5) or o.tail_depth!=3 or
+            o.cost_mode!='lazy' or o.master_mode!='cg' or o.suppress_jt_certificate):
+        raise ValueError('State bounds require D4/D5 lazy CG with D3 tails and JT certificates')
+    if o.similarity_refs and p.min_leaf>0:
+        raise ValueError('Similarity transfer currently requires min_leaf=0')
+    if o.bound_feedback and (o.master_mode!='cg' or o.cost_mode!='lazy' or o.tail_depth!=3):
+        raise ValueError('Bound feedback currently requires lazy CG with D3 tails')
+    if o.cost_mode not in ('lazy','eager') or o.master_mode not in ('cg','full','message','ee','full_ee'):
         raise ValueError('Invalid ablation mode')
-    if o.master_mode=='full' and o.cost_mode!='eager':
+    if o.master_mode in ('full','full_ee') and o.cost_mode!='eager':
         raise ValueError('Full JT-LP requires exact eager costs')
     if o.tail_depth!=3 and (o.cost_mode!='lazy' or o.master_mode!='cg' or o.suppress_jt_certificate):
         raise ValueError('Ablation switches currently require D3 tails')
@@ -305,10 +391,13 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
     if o.root_order not in ('gain','bound'):raise ValueError('Invalid root ordering')
     if o.cost_kernel not in ('baseline','fused','shared') or not 0<o.bundle_fraction<=1:
         raise ValueError('Invalid cost kernel or bundle share')
+    if o.memory_limit_bytes<1:raise ValueError('Positive memory limit required')
     clock = Deadline(time_limit); name = f'JT-CG-D{o.tail_depth}Tail-'+backend.upper()
     if o.master_mode=='message':
         name=('Exact-cost-MP-' if o.cost_mode=='eager' else 'Adaptive-MP-')+backend.upper()
-    stats = defaultdict(int); stats.update(backend=backend, options=asdict(o))
+    stats = defaultdict(int); stats.update(backend=backend, options=asdict(o),automatic_backend=automatic)
+    stats['state_screen_active']=screen_states
+    similarity_bank={}
     trace, incumbents = [], []; engine = master = state = None
     tree = Tree(label=p.best_label(p.all_rows)) if p.n>=p.min_leaf else None
     best = evaluate(p,tree)['objective'] if tree else math.inf
@@ -369,7 +458,10 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
         engine.workspace.options=replace(engine.workspace.options,
             gpu_native_metadata=o.native_metadata,gpu_metadata_cache_entries=o.metadata_cache_entries,
             gpu_sync_tiles=o.gpu_sync_tiles,gpu_pipeline_chunk=o.gpu_pipeline_chunk,
-            gpu_cost_strategy=o.cost_kernel)
+            gpu_cost_strategy=o.cost_kernel,gpu_compact_rows=o.gpu_compact_rows,
+            gpu_compact_min_batch=o.gpu_compact_min_batch,
+            gpu_compact_max_ratio=o.gpu_compact_max_ratio,
+            gpu_pair_tile=o.gpu_pair_tile,gpu_bucket_min=o.gpu_bucket_min,gpu_fused_join=o.gpu_fused_join)
         stats['setup_seconds'] += time.perf_counter()-t
         lb = max(lb,stats['conflict_lower_bound'])
         if o.warm_d3:
@@ -447,6 +539,9 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
             stats['precompute_seconds']=time.perf_counter()-tick
             stats['precompute_complete']=int(all(g['record'].exact for g in state.groups))
             if not stats['precompute_complete']:raise AssertionError('Incomplete eager oracle')
+        if o.master_mode=='ee':
+            from .contract_ee import solve_interval_ee
+            return solve_interval_ee(state,clock,o,stats,tree,lb,progress)
         if o.master_mode=='message':
             # Same state domain, bounds, cache, warm start and cost oracle as CG.
             # No NativeRMP is constructed on this path.
@@ -505,8 +600,29 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                 incumbent_trace=incumbents,first_final_ub_seconds=first,
                 first_optimal_solution_seconds=first,proof_seconds=proof,
                 formulation='D3-contracted junction tree solved by direct min-sum messages')
-        t = time.perf_counter();master = NativeRMP(state.M,p.F,len(p.labels))
+        if o.master_mode=='full_ee':
+            from .deep_contract_ee import solve_full_endpoint_lp
+            return solve_full_endpoint_lp(state,clock,o,stats,tree,lb,progress)
+        def make_master():
+            if state.M > 4:
+                from .deep_structural_native import DeepMaster
+                return DeepMaster(state.M,p.F,len(p.labels),state.domain.h,
+                    memory_limit_bytes=o.memory_limit_bytes)
+            return NativeRMP(state.M,p.F,len(p.labels))
+
+        t = time.perf_counter()
+        master = make_master()
         stats['rmp_setup_seconds'] = time.perf_counter()-t
+
+        def reduced_costs(costs,alpha,pi):
+            if state.M<=4:return state.reduced(costs,alpha,pi)
+            return master.price(costs,alpha,pi)[0].reshape(-1)
+
+        def recover_master(res):
+            if state.M<=4:return state.recover(res['support'])
+            ids=[int(i) for i in res['selection']]
+            candidate=state.domain.recover([state.column(i) for i in ids])
+            return candidate,float(sum(state.high[i] for i in ids))
 
         def update(ids):
             ids=np.unique(np.asarray(ids,dtype=np.int32))
@@ -524,7 +640,7 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
             stats['rmp_seconds']+=time.perf_counter()-tick
             if res['status'] in (9,11):raise DeadlineExceeded('Full LP timeout')
             if res['status']!=2:raise AssertionError(f"Full LP status {res['status']}")
-            candidate,value=state.recover(res['support'])
+            candidate,value=recover_master(res)
             if abs(value-res['objective'])>1e-7:raise AssertionError('Full LP recovery mismatch')
             accept(candidate,'FULL_JT_LP');lb=float(res['objective']);proof=clock.elapsed()
             stats.update(iterations=1,final_columns=len(ids),final_rows=res['rows'],
@@ -564,30 +680,34 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                 stats['rmp_seconds']+=time.perf_counter()-t
                 if res['status'] in (9,11):raise DeadlineExceeded('Native RMP timeout')
                 if res['status']!=2:raise AssertionError(f"Feasible RMP status {res['status']}")
-                candidate,value=state.recover(res['support'])
+                candidate,value=recover_master(res)
                 if abs(value-res['objective'])>1e-7:raise AssertionError('RMP gluing objective mismatch')
                 accept(candidate,'CG_RMP');stats['iterations']+=1
-                alpha=res['alpha'];pi=np.zeros(state.R)
-                for id,value in res['pi']:pi[id]=value
+                alpha=res['alpha']
+                if state.M>4:pi=np.asarray(res['pi'],dtype=float)
+                else:
+                    pi=np.zeros(state.R)
+                    for id,value in res['pi']:pi[id]=value
                 if smooth_alpha is None:
                     smooth_alpha=np.asarray(alpha);smooth_pi=pi.copy()
                 else:
                     smooth_alpha=o.dual_smoothing*smooth_alpha+(1-o.dual_smoothing)*np.asarray(alpha)
                     smooth_pi=o.dual_smoothing*smooth_pi+(1-o.dual_smoothing)*pi
                 dirty=False;batches_since_rmp=0
-            t=time.perf_counter();reduced=state.reduced(state.low,alpha,pi)
+            t=time.perf_counter();reduced=reduced_costs(state.low,alpha,pi)
             minima=np.minimum(0.,reduced.reshape(state.M,state.P).min(axis=1))
             computed=float(sum(alpha)+sum(minima));lb=max(lb,computed)
             low_info=high_info=None
-            if o.message_bound or o.bundle_pricing:
+            if o.message_bound or o.bundle_pricing or screen_states:
                 tick=time.perf_counter()
                 low_info=state.messages(state.low);high_info=state.messages(state.high)
                 message_lower=float(np.min(low_info[0]))
                 stats['message_lower_bound']=message_lower
-                excludable=int(np.count_nonzero(low_info[0][:state.F]>=best-1e-9))
+                excludable=(int(np.count_nonzero(low_info[0][:state.F]>=best-1e-9))
+                            if state.M<=4 else 0)
                 stats['roots_excludable_by_message']=excludable
                 stats['roots_excluded_by_message']=0 if o.suppress_jt_certificate else excludable
-                if o.message_bound and not o.suppress_jt_certificate:
+                if (o.message_bound or screen_states) and not o.suppress_jt_certificate:
                     lb=max(lb,message_lower)
                     stats['jt_certificate_updates']+=1
                 if o.bundle_pricing:
@@ -598,11 +718,11 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
             if lb>best+1e-7:raise AssertionError('Certified contracted CG LB exceeds incumbent')
             lb=min(lb,best)
             certificate=dict(alpha_sum=float(sum(alpha)),pricing_lower_bounds=minima.tolist(),computed_LB=computed,
-                jt_bound_used=bool(o.message_bound and not o.suppress_jt_certificate),
+                jt_bound_used=bool((o.message_bound or screen_states) and not o.suppress_jt_certificate),
                 max_equality_residual=res['max_equality_residual'],minimum_active_reduced_cost=res['minimum_active_reduced_cost'],
                 pricing_scope=f'lower bounds for every exact or unresolved private D{o.tail_depth} configuration')
             if low_info is not None:certificate['upper_message_LB']=float(np.min(low_info[0]))
-            upper_rc=state.reduced(state.high,alpha,pi)
+            upper_rc=reduced_costs(state.high,alpha,pi)
             ids=[]
             for q in range(state.M):
                 choices=np.flatnonzero((upper_rc[q*state.P:(q+1)*state.P]<-1e-8)&~active[q*state.P:(q+1)*state.P])+q*state.P
@@ -624,7 +744,13 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                         batches_since_rmp=o.rmp_every_batches
                         iteration+=1
                         continue
-                    support=np.asarray([int(i) for i,value in res['support'] if value>1e-9],dtype=np.int32)
+                    if state.M>4:
+                        # The generic native path core returns the integral
+                        # compatible support directly; the legacy D4/D5 RMP
+                        # returns sparse primal pairs.
+                        support=np.asarray(res['selection'],dtype=np.int32)
+                    else:
+                        support=np.asarray([int(i) for i,value in res['support'] if value>1e-9],dtype=np.int32)
                     incumbent=state.inject(tree)
                     protected=np.union1d(support,incumbent).astype(np.int32)
                     if len(protected)>=o.max_columns and len(incumbent)<o.max_columns:
@@ -640,7 +766,7 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                     order=np.lexsort((extras,upper_rc[extras]))
                     keep=np.union1d(protected,extras[order[:target-len(protected)]]).astype(np.int32)
                     tick=time.perf_counter()
-                    master.close();master=NativeRMP(state.M,p.F,len(p.labels))
+                    master.close();master=make_master()
                     active[:]=False;update(keep)
                     stats['capacity_rebuilds']+=1
                     stats['capacity_evicted_columns']+=active_count-len(keep)
@@ -660,7 +786,7 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                     iteration-stats.get('last_compaction_iteration',-20)>=20):
                 # Compact to an incumbent bundle. Removed signatures remain in
                 # the complete pricing domain and may be generated again.
-                keep=state.inject(tree);master.close();master=NativeRMP(state.M,p.F,len(p.labels))
+                keep=state.inject(tree);master.close();master=make_master()
                 active[:]=False;update(keep);dirty=True;res=None
                 stats['rmp_compactions']+=1;batches_since_rmp=0
                 stats['last_compaction_iteration']=iteration
@@ -679,16 +805,25 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
                 if o.rmp_every_batches==1 and not capacity_pressure:
                     batches_since_rmp=1;iteration+=1;continue
             candidates=np.flatnonzero((reduced<-1e-8)&(state.private>=0))
-            if o.message_bound and not o.suppress_jt_certificate:
+            marginal=None
+            if screen_states:
+                tick=time.perf_counter();marginal=state.min_marginals(state.low,low_info)
+                keep=marginal[candidates]<best-1e-9
+                stats['state_screened_candidates']+=int(np.count_nonzero(~keep))
+                candidates=candidates[keep]
+                stats['state_screen_seconds']+=time.perf_counter()-tick
+            if o.message_bound and not o.suppress_jt_certificate and state.M<=4:
                 root_ids=candidates%state.P if state.M==2 else state.roots[candidates%state.P]
                 candidates=candidates[low_info[0][root_ids]<best-1e-9]
             # Choose promising unknown private states, never use an incumbent as LB.
-            priority=state.reduced(state.low,smooth_alpha,smooth_pi) if o.dual_smoothing else reduced
+            priority=reduced_costs(state.low,smooth_alpha,smooth_pi) if o.dual_smoothing else reduced
             ranked=candidates[np.argsort(priority[candidates],kind='stable')]
             bundle_limit=max(1,int(o.oracle_batch*o.bundle_fraction))
             gids=state.compatible_groups(o.oracle_batch if capacity_pressure else bundle_limit,
                 best,low_info,high_info) if o.bundle_pricing or capacity_pressure else []
             if capacity_pressure:stats['capacity_bundle_states_selected']+=len(gids)
+            if marginal is not None:
+                gids=[g for g in gids if np.any(marginal[state.groups[g]['ids']]<best-1e-9)]
             stats['bundle_states_selected']+=len(gids)
             seen=set(gids)
             if len(gids)<o.oracle_batch and (not o.bundle_pricing or not gids or o.bundle_fraction<1):
@@ -701,6 +836,49 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
             if not gids:
                 if dirty:batches_since_rmp=o.rmp_every_batches;continue
                 raise AssertionError('Open pricing gap without an unresolved negative candidate')
+            # A bound is reusable across dual epochs; screening against a cutoff
+            # is not. Return all newly refined intervals, then rerun complete
+            # pricing. Each group gets one bounded attempt before exact fallback.
+            if o.similarity_refs:
+                tick=time.perf_counter();improved=False
+                for gid in gids:
+                    g=state.groups[gid]
+                    key=tuple(sorted(g['used'])) if p.no_repeat else ()
+                    refs=similarity_bank.get(key,[])
+                    old=g['record'];lower=old.lower
+                    for mask,value in refs:
+                        lower=max(lower,value-(mask & ~g['rows'].mask).bit_count()*p._uniform_weight)
+                    stats['similarity_comparisons']+=len(refs)
+                    if lower>old.lower+1e-10:
+                        state.update_group(gid,Interval(lower,old.upper,old.tree,old.exact))
+                        stats['similarity_improvements']+=1;improved=True
+                stats['similarity_seconds']+=time.perf_counter()-tick
+                if improved:
+                    iteration+=1;continue # Fresh complete pricing and messages; no exact-cache insertion.
+            refine_gids=[g for g in gids if not state.groups[g].get('bound_refined',False)] if o.bound_feedback else []
+            if refine_gids:
+                changed=[]
+                for gid in refine_gids:
+                    group=state.groups[gid];before=group['record'].upper
+                    # All aliases of this RowSet must be covered, including
+                    # signatures outside the currently selected pricing batch.
+                    thresholds=group['record'].lower-reduced[group['ids']]
+                    if marginal is not None:
+                        thresholds=np.minimum(thresholds,best-marginal[group['ids']]+group['record'].lower)
+                    cutoff=float(np.max(thresholds))
+                    answer=engine.refine(group['rows'],group['node'],group['used'],cutoff,o.cutoff_node_budget)
+                    stats['interval_cutoff_closed']+=int(not answer.exact and answer.lower>=cutoff)
+                    group['bound_refined']=True
+                    affected=state.update_group(gid,answer)
+                    if group['record'].upper<before-1e-12:changed.extend(affected[active[affected]].tolist())
+                if changed:update(np.asarray(sorted(set(changed)),dtype=np.int32));dirty=True
+                stats['bound_feedback_rounds']=stats.get('bound_feedback_rounds',0)+1
+                # Old duals still give a valid repaired certificate after cost
+                # tightening. Respect the existing master cadence instead of
+                # resolving the LP after every improved feasible stump.
+                batches_since_rmp+=1
+                iteration+=1
+                continue
             requests=[(state.groups[g]['rows'],state.groups[g]['node'],state.groups[g]['used']) for g in gids]
             if capacity_pressure:stats['capacity_pricing_interleaves']+=1
             t=time.perf_counter();answers=engine.terminal_many(requests)
@@ -710,6 +888,11 @@ def solve_contracted_cg(p, backend='gpu', time_limit=60, options=None, progress=
             for gid,answer in zip(gids,answers):
                 group=state.groups[gid];before=group['record'].upper
                 affected=state.update_group(gid,answer)
+                if o.similarity_refs and answer.exact:
+                    key=tuple(sorted(group['used'])) if p.no_repeat else ()
+                    bank=similarity_bank.setdefault(key,[])
+                    bank.append((group['rows'].mask,answer.lower))
+                    del bank[:-o.similarity_refs]
                 if group['record'].upper<before-1e-12:changed.extend(affected[active[affected]].tolist())
             if changed:update(np.asarray(sorted(set(changed)),dtype=np.int32));dirty=True
             if o.rmp_every_batches==1 and dirty:batches_since_rmp=1

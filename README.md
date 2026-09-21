@@ -1,30 +1,26 @@
 # JT-OCT
 
-JT-OCT is the reference implementation accompanying *A Junction-Tree Linear Programming Model for Optimal Classification Trees*. It trains sparse, bounded-depth classification trees over a fixed binary feature dictionary by minimizing
+Exact optimization of classification trees with binary features. The objective is
 
 \[
 \text{misclassification rate} + \lambda\,\text{number of split nodes}.
 \]
 
-The repository provides three exact methods built on the same junction-tree representation:
+JT-OCT provides three methods:
 
-| Method | Description | Intended use |
-|---|---|---|
-| JT-LP | Explicit continuous junction-tree LP | Small configuration spaces and formulation studies |
-| JT-CG | Column generation with exact pricing and valid lower bounds | Larger instances |
-| JT-MP | Exact min-sum message passing with adaptive cost refinement | Fast coordination for the additive model |
+| Method | Approach |
+|---|---|
+| JT-LP | Linear programming with exact structural reductions |
+| JT-CG | Column generation with bounds for optimality certification |
+| JT-MP | Message passing with adaptive subtree-cost evaluation |
 
-All methods return a feasible tree, its independently evaluated objective, a lower bound, and an optimality status. The predictor matrix must already be binary. Continuous variables should be discretized before calling JT-OCT.
+All methods allow early stopping and minimum leaf support. They return a tree
+when one is found, objective bounds, runtime, and a termination status.
 
-## Requirements
+## Installation
 
-- Python 3.10 or newer
-- NumPy and SciPy
-- Gurobi 13 with a valid license
-- Windows, MSVC Build Tools, and the Gurobi C++ SDK for optimized native backends
-- NVIDIA CUDA and CuPy only for optional GPU evaluation
-
-Install the Python package in editable mode:
+Python 3.10+, NumPy, SciPy, psutil, and Gurobi 13 with a valid license are required.
+From the repository root:
 
 ```powershell
 python -m venv .venv
@@ -32,148 +28,102 @@ python -m venv .venv
 python -m pip install -e ".[test]"
 ```
 
-The bundled small example runs with the reference implementations without compiling native extensions. To build all optimized CPU backends on Windows, set `GUROBI_HOME` if necessary and run:
+The reference implementations run without native compilation. To build the
+optimized backends on Windows, install MSVC Build Tools and the Gurobi C++ SDK:
 
 ```powershell
-.\build_all.ps1
+.\build_all.ps1 -GurobiRoot "C:\gurobi1300\win64"
 ```
 
-For GPU execution, also install the optional dependency:
+Optional GPU evaluation requires an NVIDIA CUDA device and CuPy:
 
 ```powershell
 python -m pip install -e ".[gpu]"
 ```
 
-## Python example
+Set `CUDA_PATH` to the CUDA toolkit directory, or use `JT_OCT_CUDA_ROOT` to select
+a separate runtime installation. On Windows, use ASCII-only paths for both the
+toolkit and the Python environment so NVRTC can read their headers.
+GPU kernels are compiled at runtime from `native/`.
+Use the editable installation above when running from this repository.
+
+## Example
 
 ```python
-from jt_oct import load_binary_csv, make_problem, named_tree, solve
+from jt_oct import load_benchmark, make_problem, named_tree, solve
 
-X, y, features, labels = load_binary_csv("examples/toy_binary.csv")
-problem = make_problem(X, y, depth=2, penalty=0.01)
-
-result = solve(problem, method="JT-MP", time_limit=30, backend="cpu")
+X, y, features, labels = load_benchmark("banknote")
+problem = make_problem(X, y, depth=4, penalty=0.01)
+result = solve(problem, method="JT-CG", time_limit=600, backend="auto")
 print(result["status"], result["LB"], result["UB"])
 print(named_tree(result["tree"], features, labels))
 ```
 
-Run all three methods on the included data:
+For a small example without native compilation:
 
 ```powershell
-python examples\basic_usage.py
-```
-
-The methods should return the same optimal objective. JT-LP may become too large as depth and the number of binary predicates increase; JT-CG and JT-MP use the optimized contracted implementation at depths four and five when the native extensions are available.
-
-## Depth support
-
-The junction-tree model and all three public solvers accept every integer depth
-`D >= 1`; there is no hard cutoff at depth five. The implementations are selected
-as follows:
-
-| Depth | Implementation selected when available |
-|---|---|
-| 1 | General path-cluster formulation |
-| 2--3 | Specialized shallow JT-CG/JT-MP kernels |
-| 4--5 | Depth-three private-subtree contraction used in the experiments |
-| 6 and above | General path-cluster JT-LP, JT-CG, or streaming JT-MP |
-
-The general formulation creates \(2^{D-1}\) path clusters before accounting for
-their local configurations. It is exact at every depth, but its running time and
-memory can therefore grow exponentially, as expected for the NP-hard OCT problem.
-The depth-specific native code changes computational efficiency only; it does not
-change the model or its feasible trees.
-
-The following example solves six-bit parity using all three general methods. Zero
-training error requires all six levels and 63 split nodes, so this checks actual
-depth-six behavior rather than a shallow tree under a loose depth limit:
-
-```powershell
-python examples\arbitrary_depth.py
+python examples/basic_usage.py
 ```
 
 ## Command line
 
-The first CSV column is treated as the class label by default:
+Run a bundled dataset or supply a binary CSV:
 
 ```powershell
-jt-oct examples\toy_binary.csv --method JT-CG --depth 2 --penalty 0.01 --backend cpu
+python -m jt_oct --dataset banknote --method JT-CG --depth 4 --penalty 0.01
+python -m jt_oct examples/toy_binary.csv --method JT-MP --depth 2 --backend cpu
 ```
 
-Use `--label class_name` when the label is not the first column. The command prints JSON; pass `--output outputs/result.json` to save it.
+The first CSV column contains labels unless `--label` specifies another name or
+index. Use `--output outputs/result.json` to save a result. The matrix is not
+silently discretized; predictors must be encoded as 0 or 1.
 
-## Default parameters
+## Benchmark datasets
 
-The public interface minimizes
+The `datasets/` directory contains all 11 binary benchmark matrices, including
+all observations used in the experiments. They are stored as compressed NumPy
+archives and loaded with `load_benchmark`. See [datasets/README.md](datasets/README.md)
+for dimensions, fields, and preprocessing information.
 
-\[
-\frac{1}{n}\sum_{i=1}^n \mathbf 1\{T(x_i)\ne y_i\}
-+\lambda |B(T)|,
-\]
+## Depths and defaults
 
-where \(B(T)\) is the set of split nodes. The defaults are:
+All three methods accept any integer depth `D >= 1`. Depths two and three use
+specialized native solvers when built; depths four and five use conditional
+subtrees of private depth three. Other depths use the general exact formulation.
+The number of configurations can grow exponentially with depth and the number of
+candidate split rules. `examples/arbitrary_depth.py` demonstrates depth six.
 
-| Parameter | Default | Meaning |
-|---|---:|---|
-| `method` | `JT-MP` | Exact min-sum message passing |
-| `depth` | Required by `make_problem`; `2` in the CLI | Maximum tree depth |
-| `penalty` | `0.0` | Penalty \(\lambda\) per split node |
-| `time_limit` | `600` seconds | Wall-clock limit for one solve |
-| `max_columns` | `200000` | Maximum number of configurations or active columns |
-| `backend` | `auto` | Automatic computational backend selection |
-| `min_leaf` | `0` | Minimum observations reaching a leaf |
-| `no_repeat` | `True` | Forbid reuse of a feature on one root-to-leaf path |
-| `early_stop` | `True` | Permit prediction before the maximum depth |
-| observation weight | `1/n` | Uniform contribution to the misclassification rate |
-| CSV label column | first column | Override with `--label` or `label_column` |
+| Parameter | Default |
+|---|---|
+| `method` | `JT-MP` |
+| `depth` | Required in `make_problem`; 2 in the CLI |
+| `penalty` | 0.0 per split |
+| `time_limit` | 600 seconds |
+| `max_columns` | 200,000 |
+| `backend` | `auto` |
+| `min_leaf` | 0 |
+| `no_repeat` | `True` |
+| `preparation_workers` | 1 |
 
-With `backend="auto"`, GPU evaluation is selected when a CUDA device is
-available and either the number of features is at least 48 or the number of
-observations is at least 10,000. Otherwise, the optimized code uses CPU
-evaluation with eight OpenMP threads. At depths above five, the solver uses the
-general path-cluster implementation; the backend choice does not change that
-formulation.
+Automatic selection uses the GPU when available and either `F >= 48` or
+`n >= 10,000`; smaller problems use the CPU. Native deep searches use eight CPU
+workers. D4/D5 evaluation uses state screening, shared GPU cost kernels, and
+fused joins. Local bitsets are compacted only when the batch and compression
+ratio meet the configured thresholds. Class-count bounds are enabled for
+multiclass problems. CG normally re-solves its master after each batch; the D5
+binary profile with `F >= 100` and `n < 100,000` uses four batches. These defaults
+are shared by CPU/GPU selection and the corresponding solver options.
 
-An explicit Python call with the defaults is:
-
-```python
-problem = make_problem(
-    X,
-    y,
-    depth=6,          # required in the Python interface
-    penalty=0.0,
-    no_repeat=True,
-    min_leaf=0,
-)
-
-result = solve(
-    problem,
-    method="JT-MP",
-    time_limit=600,
-    max_columns=200_000,
-    backend="auto",
-)
-```
-
-## Input and output
-
-Input predictors must contain only 0 and 1. Labels may be strings or integers and are encoded internally. By default, a feature cannot be used twice on one root-to-leaf path, early stopping is enabled, and the minimum leaf size is zero.
-
-The result dictionary includes `status`, certified bounds `LB` and `UB`, the recovered `tree`, independently evaluated `metrics`, `model_depth`, and the selected `implementation`.
-
-## Verification
+## Tests
 
 ```powershell
 python -m pytest
-python examples\basic_usage.py
 ```
 
-Large benchmark datasets and experimental result archives are kept outside this source repository.
+Tests compare objectives and bounds with independent tree search, check native
+and GPU evaluation, and verify every dataset's checksum and dimensions. Tests
+requiring unavailable native or CUDA backends are skipped.
 
 ## Citation
 
-Citation metadata are provided in `CITATION.cff`. Please cite the associated paper when using the software.
-
-## License
-
-No redistribution license has been selected yet. Add the authors' chosen license before making the repository public.
+Citation metadata are provided in `CITATION.cff`.

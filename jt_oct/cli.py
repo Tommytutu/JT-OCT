@@ -4,11 +4,13 @@ import json
 from pathlib import Path
 
 from .api import load_binary_csv, make_problem, named_tree, solve
+from .datasets import BENCHMARKS, load_benchmark
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Solve an optimal classification tree")
-    parser.add_argument("csv", help="CSV file with one label column and binary predictors")
+    parser.add_argument("csv", nargs="?", help="CSV file with one label column and binary predictors")
+    parser.add_argument("--dataset", choices=BENCHMARKS, help="bundled benchmark dataset")
     parser.add_argument("--label", default="0", help="label column name or zero-based index")
     parser.add_argument("--method", choices=["JT-LP", "JT-CG", "JT-MP"], default="JT-MP")
     parser.add_argument("--depth", type=int, default=2)
@@ -21,7 +23,10 @@ def main(argv=None):
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     label = int(args.label) if args.label.isdigit() else args.label
-    X, y, features, labels = load_binary_csv(args.csv, label)
+    if bool(args.csv) == bool(args.dataset):
+        parser.error("provide either a CSV path or --dataset")
+    X, y, features, labels = (load_benchmark(args.dataset) if args.dataset
+                              else load_binary_csv(args.csv, label))
     problem = make_problem(X, y, depth=args.depth, penalty=args.penalty,
                            no_repeat=not args.allow_repeat, min_leaf=args.min_leaf)
     result = solve(problem, args.method, time_limit=args.time_limit,

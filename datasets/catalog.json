@@ -1,0 +1,107 @@
+[
+  {
+    "name": "avila",
+    "file": "avila.npz",
+    "observations": 20867,
+    "features": 85,
+    "classes": 12,
+    "sha256": "53f7af00031e8fae36d44748e3bee301a841f3dcc45c0e2ea1220bb56d50aa40",
+    "binary_source_sha256": "7db76ddf4c5b0a0927aea2e828425ccdf9d8c8d47897b65e9f318566af7cdb73",
+    "source_url": "https://archive.ics.uci.edu/dataset/459/avila"
+  },
+  {
+    "name": "banknote",
+    "file": "banknote.npz",
+    "observations": 1372,
+    "features": 36,
+    "classes": 2,
+    "sha256": "348e422d97ec47cd15d15c2b4f5a1c262c09056f4ba1a4477f9c265d1b5b0d48",
+    "binary_source_sha256": "a6364664f3244a6f38a18f5049901e7a73fb00566d1b142bee9bfd93bc63d0df",
+    "source_url": "https://archive.ics.uci.edu/dataset/267/banknote+authentication"
+  },
+  {
+    "name": "compas",
+    "file": "compas.npz",
+    "observations": 12381,
+    "features": 71,
+    "classes": 2,
+    "sha256": "2d5d59deb42fef6a818dce38860823d5632f29cdf02e41f5d2361a87e73be6d4",
+    "binary_source_sha256": "9ccdf706d95533d347710dbfb31c4065e2effde6b97a6b8ee3c5f49ddcacba1e"
+  },
+  {
+    "name": "diabetic",
+    "file": "diabetic.npz",
+    "observations": 101766,
+    "features": 315,
+    "classes": 3,
+    "sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56",
+    "binary_source_sha256": "f8c6c41f52b0067e3be02c091433de47610e693e62b48f03bc0b903c6a0a47cd"
+  },
+  {
+    "name": "fico",
+    "file": "fico.npz",
+    "observations": 10459,
+    "features": 159,
+    "classes": 2,
+    "sha256": "6c97fbe160404e9450b898e8c08881cc9ee8d51ce91be76c3237c5525cb7aa72",
+    "binary_source_sha256": "b2f4d6a47d5759d30ba2946cebbcc419d99248d7d1b88d0308f0fd5174c8795c"
+  },
+  {
+    "name": "give",
+    "file": "give.npz",
+    "observations": 150000,
+    "features": 57,
+    "classes": 2,
+    "sha256": "99de54747657634078fe180f7083ab5f3997edc8a695fc05121cb87356c93778",
+    "binary_source_sha256": "bbc5a5060b2a159613b5c41562f77a286feeed4e1689a14d0d729cba6be62e01"
+  },
+  {
+    "name": "htru2",
+    "file": "htru2.npz",
+    "observations": 17898,
+    "features": 72,
+    "classes": 2,
+    "sha256": "cebde3742c215bf502dfe1ab5f5cd87f8603fa28988e5d88001d9f2425b3d17f",
+    "binary_source_sha256": "02141d923c14b0b48500e308ac704c54ff8df3d504e6a6c3b826a39d280eb47b",
+    "source_url": "https://archive.ics.uci.edu/dataset/372/htru2"
+  },
+  {
+    "name": "letter",
+    "file": "letter.npz",
+    "observations": 20000,
+    "features": 99,
+    "classes": 26,
+    "sha256": "92bf9fcbcb598ae1ee959db3defafe52c047f9f62610ef52e8a87d015cecdeb7",
+    "binary_source_sha256": "87f9b42884d58f8a12cc50712964572ce7c26ba5d8e61fb4deebb2a3b8fef5bb",
+    "source_url": "https://archive.ics.uci.edu/dataset/59/letter+recognition"
+  },
+  {
+    "name": "skin",
+    "file": "skin.npz",
+    "observations": 245057,
+    "features": 27,
+    "classes": 2,
+    "sha256": "8a5ea22d1f5843cfbfa85010d8373f6b14a79ddcfbf93e8c8153060b20710f91",
+    "binary_source_sha256": "1785061ca0a765d06cd547f13347a22b82710c8b4eefabc1d6088a227f9878a5",
+    "source_url": "https://archive.ics.uci.edu/dataset/229/skin+segmentation"
+  },
+  {
+    "name": "spambase",
+    "file": "spambase.npz",
+    "observations": 4601,
+    "features": 152,
+    "classes": 2,
+    "sha256": "763273611d8084e7466f4497cd4350da91296a38b0ba3268aa40193bf6dca730",
+    "binary_source_sha256": "c28149114190097e790273551e802291dcc5f1da3a40d0430f5bff42b6d6544c",
+    "source_url": "https://archive.ics.uci.edu/dataset/94/spambase"
+  },
+  {
+    "name": "transactions",
+    "file": "transactions.npz",
+    "observations": 786363,
+    "features": 131,
+    "classes": 2,
+    "sha256": "c8e235de8f0a57e360b621a7824372dc34b1ffb141d56be5d3b20f9bfced4ba9",
+    "binary_source_sha256": "98ec7de6edeeea2e1a18e8c8a19e0de6c2d7c57d5ec9aa43c0b540890dddcb60"
+  }
+]

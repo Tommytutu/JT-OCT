@@ -16,7 +16,7 @@ import time
 
 import numpy as np
 
-from .problem import Deadline, Tree
+from .problem import Deadline, Tree, evaluate
 from .solvers import result_dict
 
 _DLL = None
@@ -55,6 +55,8 @@ def _library():
         lib.d2cg_solve.argtypes = [ct.c_void_p, ct.c_double, ct.c_double,
                                   ct.c_int, ct.c_int, ct.c_int, _CALLBACK]
         lib.d2cg_solve.restype = ct.c_char_p
+        lib.d2cg_structural.argtypes = [ct.c_void_p, ct.c_double, ct.c_double, ct.c_int, ct.c_int]
+        lib.d2cg_structural.restype = ct.c_char_p
         lib.d2cg_price.argtypes = [ct.c_void_p, ct.c_double, _DOUBLE, _DOUBLE]
         lib.d2cg_price.restype = ct.c_char_p
         lib.d2cg_set_packed.argtypes = [ct.c_void_p, _WORD, _WORD]
@@ -301,6 +303,40 @@ class D2CGWorkspace:
             return self._decode(self._lib.d2cg_price(self._handle, penalty,
                 alpha.ctypes.data_as(_DOUBLE), dual.ctypes.data_as(_DOUBLE)))
 
+    def solve_structural_lp(self, reduction="sc", penalty=None, time_limit=600, rmp_method=1,
+                            *, _clock=None):
+        """Exact D2 LP-SC or single-block LP-SC-EE using the native engine."""
+        if reduction not in ("sc", "sc_ee"):
+            raise ValueError("D2 structural reduction must be sc or sc_ee")
+        if rmp_method not in (-1, 0, 1, 2):
+            raise ValueError("rmp_method must be -1, 0, 1, or 2")
+        penalty = self._p.penalty if penalty is None else float(penalty)
+        if not math.isfinite(penalty) or penalty < 0:
+            raise ValueError("penalty must be finite and nonnegative")
+        clock = _clock if _clock is not None else Deadline(time_limit)
+        with self._lock:
+            if not self._handle:
+                raise RuntimeError("D2 workspace is closed")
+            raw = self._lib.d2cg_structural(self._handle, penalty,
+                max(0., clock.end-time.perf_counter()), int(reduction == "sc_ee"), rmp_method)
+            data = self._decode(raw)
+        tree = self._tree(data.pop("tree"))
+        data["tree"] = tree.to_dict() if tree else None
+        data["seconds"] = clock.elapsed()
+        data["method"] = "JT-LP-SC-EE-D2" if reduction == "sc_ee" else "JT-LP-SC-D2"
+        data.update(self._adapter_stats, cost_backend=self._cost_backend,
+                    cost_backend_requested=self._cost_backend_requested)
+        if self._gpu_costs is not None:
+            data.update(self._gpu_costs.stats)
+        if tree is not None:
+            p=copy.copy(self._p);p.penalty=penalty;audit=evaluate(p,tree)
+            if data.get("UB") is None or not math.isclose(audit["objective"],data["UB"],abs_tol=1e-7):
+                raise AssertionError("D2 structural tree objective mismatch")
+            data["tree_audit"]=audit;data["UB"]=audit["objective"]
+        if data["status"] == "OPT" and (tree is None or abs(data["UB"]-data["LB"])>1e-7):
+            raise AssertionError("D2 structural OPT certificate is incomplete")
+        return data
+
 
 def solve_d2_cg(problem, time_limit=600, *, threads=0, batch_size=0,
                 max_columns=200000, rmp_method=0, progress=None,
@@ -313,4 +349,16 @@ def solve_d2_cg(problem, time_limit=600, *, threads=0, batch_size=0,
             max_columns=max_columns, rmp_method=rmp_method, progress=progress, _clock=clock)
     result["seconds"] = clock.elapsed()
     result["interface_seconds"] = max(0., result["seconds"] - result["native_seconds"])
+    return result
+
+
+def solve_d2_structural_lp(problem, reduction="sc", time_limit=600, *, threads=8,
+                           rmp_method=1, cost_backend="auto", gpu_strategy="pair",
+                           reuse_problem_masks=True):
+    """One-shot D2 SC/EE experiment; expensive work remains in C++/CUDA."""
+    clock=Deadline(time_limit)
+    with D2CGWorkspace(problem,threads=threads,cost_backend=cost_backend,
+                       gpu_strategy=gpu_strategy,reuse_problem_masks=reuse_problem_masks) as workspace:
+        result=workspace.solve_structural_lp(reduction,time_limit=time_limit,rmp_method=rmp_method,_clock=clock)
+    result["seconds"]=clock.elapsed();result["interface_seconds"]=max(0.,result["seconds"]-result["native_seconds"])
     return result

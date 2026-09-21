@@ -40,6 +40,12 @@ class D3Options:
     gpu_sync_tiles: int = 1
     gpu_pipeline_chunk: int = 0
     gpu_cost_strategy: str = 'baseline'
+    gpu_compact_rows: bool = True
+    gpu_compact_min_batch: int = 8
+    gpu_compact_max_ratio: float = .75
+    gpu_pair_tile: int = 4096
+    gpu_bucket_min: int = 8
+    gpu_fused_join: bool = True
 
 
 PRESETS={'core':D3Options(stop_bounds=False,compact_features=False),
@@ -57,6 +63,10 @@ class D3Workspace:
             raise ValueError('D3 optimized backend must be cpp or gpu')
         self.p,self.backend,self.threads=p,backend,int(threads)
         self.options=options or D3Options()
+        if self.options.gpu_pair_tile<1 or self.options.gpu_bucket_min<0:
+            raise ValueError('Invalid resident GPU dispatch options')
+        if self.options.gpu_compact_min_batch<1 or not 0<self.options.gpu_compact_max_ratio<1:
+            raise ValueError('Invalid compact-row profitability thresholds')
         if self.options.tile_pairs<1:
             raise ValueError('tile_pairs must be positive')
         if self.options.gpu_word_tile<1:

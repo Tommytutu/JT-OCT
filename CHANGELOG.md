@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+- Update reduced LP and conditional-subtree solvers.
+- Add state screening, GPU bitset compaction, and fused joins.
+- Include all 11 binary benchmark datasets and a dataset-loading interface.
+- Extend native builds and correctness tests.
+
 ## 0.2.0 — 2026-09-14
 
 - Document and test exact JT-LP, JT-CG, and JT-MP support for every depth `D >= 1`.

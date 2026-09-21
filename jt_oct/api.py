@@ -17,6 +17,8 @@ METHODS = ("JT-LP", "JT-CG", "JT-MP")
 
 def _gpu_available() -> bool:
     try:
+        from .d3_batched import _configure_cupy_runtime
+        _configure_cupy_runtime()
         import cupy as cp
         return cp.cuda.runtime.getDeviceCount() > 0
     except Exception:
@@ -67,10 +69,12 @@ def load_binary_csv(path: str | Path, label_column: int | str = 0):
 
 
 def make_problem(X, y, *, depth: int, penalty: float = 0.0,
-                 no_repeat: bool = True, min_leaf: int = 0) -> Problem:
+                 no_repeat: bool = True, min_leaf: int = 0,
+                 preparation_workers: int = 1) -> Problem:
     """Construct the paper's binary-feature OCT problem."""
     return Problem(X, y, depth=depth, penalty=penalty, early_stop=True,
-                   no_repeat=no_repeat, min_leaf=min_leaf)
+                   no_repeat=no_repeat, min_leaf=min_leaf,
+                   preparation_workers=preparation_workers)
 
 
 def _paper_options(problem: Problem, backend: str, max_columns: int, *, message: bool):
@@ -93,10 +97,34 @@ def _paper_options(problem: Problem, backend: str, max_columns: int, *, message:
 
 
 def solve_jt_lp(problem: Problem, *, time_limit: float = 600,
-                max_columns: int = 200_000):
-    """Solve the explicit junction-tree LP at any depth and recover a tree."""
-    result = solve_full(Domain(problem), time_limit=time_limit, max_columns=max_columns)
-    result.update(method="JT-LP", implementation="general_explicit_junction_tree_lp",
+                max_columns: int = 200_000, backend: str = "auto"):
+    """Solve the reduced LP when available, otherwise the general exact LP."""
+    selected = _backend(problem, backend)
+    if problem.depth == 2 and _native("d2_cg.dll"):
+        from .d2_cg import solve_d2_structural_lp
+        result = solve_d2_structural_lp(problem, reduction="sc_ee",
+            time_limit=time_limit, threads=8, cost_backend=selected)
+        implementation = "native_reduced_lp_d2"
+    elif problem.depth == 3 and _native("d3_structural.dll"):
+        from .d3_structural_native import solve_d3_structural_native
+        result = solve_d3_structural_native(problem, reduction="sc_ee",
+            coordinator="lp", backend=selected, threads=8,
+            time_limit=time_limit, max_columns=max_columns)
+        implementation = "native_reduced_lp_d3"
+    elif problem.depth in (4, 5) and _native("contract_rmp.dll") and _native("d3_optimized.dll"):
+        from dataclasses import replace
+        from .contract_cg import solve_contracted_cg
+        options = replace(_paper_options(problem, selected, max_columns, message=False),
+                          master_mode="full", cost_mode="eager")
+        result = solve_contracted_cg(problem, selected, time_limit, options)
+        implementation = "contracted_full_lp"
+    else:
+        result = solve_full(Domain(problem), time_limit=time_limit, max_columns=max_columns)
+        implementation = "general_explicit_junction_tree_lp"
+        selected = "cpu"
+    if result.get("tree") is not None:
+        result.setdefault("metrics", evaluate(problem, Tree.from_dict(result["tree"])))
+    result.update(method="JT-LP", implementation=implementation, backend=selected,
                   model_depth=problem.depth)
     return result
 
@@ -125,6 +153,7 @@ def solve_jt_cg(problem: Problem, *, time_limit: float = 600,
         result = solve_cg(Domain(problem), time_limit,
                           CGOptions(max_columns=max_columns))
         implementation = "general_path_cluster_column_generation"
+        selected = "cpu"
     result.update(method="JT-CG", implementation=implementation, backend=selected,
                   model_depth=problem.depth)
     return result
@@ -148,6 +177,7 @@ def solve_jt_mp(problem: Problem, *, time_limit: float = 600,
         result = solve_jt_dp(Domain(problem), time_limit=time_limit,
                              max_columns=max_columns)
         implementation = "general_streaming_junction_tree_message_passing"
+        selected = "cpu"
     result.update(method="JT-MP", implementation=implementation, backend=selected,
                   model_depth=problem.depth)
     return result
@@ -159,8 +189,6 @@ def solve(problem: Problem, method: str = "JT-MP", **kwargs):
     functions = {"JT-LP": solve_jt_lp, "JT-CG": solve_jt_cg, "JT-MP": solve_jt_mp}
     if normalized not in functions:
         raise ValueError(f"method must be one of {', '.join(METHODS)}")
-    if normalized == "JT-LP":
-        kwargs.pop("backend", None)
     return functions[normalized](problem, **kwargs)
 
 

@@ -93,13 +93,21 @@ def _binary_matrix(raw):
     return bool(np.isin(raw, [0, 1]).all())
 
 
-def _column_masks(X):
+def _column_masks(X, workers=1):
     """Cache-sized row tiles avoid repeatedly striding across a large matrix.
 
     Row blocks start on byte boundaries. The final packbits byte is zero padded,
     preserving observation zero as the least-significant bit exactly.
     """
     n,F=X.shape
+    if workers > 1 and X.size >= 1_000_000:
+        from concurrent.futures import ThreadPoolExecutor
+        # NumPy packing releases the GIL. Each worker owns a feature slab;
+        # unlike process workers this does not duplicate the training matrix.
+        slabs = np.array_split(np.arange(F), min(workers, F))
+        with ThreadPoolExecutor(max_workers=len(slabs)) as executor:
+            parts = list(executor.map(lambda ids: _column_masks(X[:, ids[0]:ids[-1]+1]), slabs))
+        return tuple(mask for part in parts for mask in part)
     if X.size < 1_000_000:
         return tuple(_mask(X[:,f]) for f in range(F))
     packed=np.empty((F,(n+7)//8),dtype=np.uint8)
@@ -113,7 +121,8 @@ def _column_masks(X):
 
 class Problem:
     def __init__(self, X, y, depth, penalty=0.0, weights=None, early_stop=True,
-                 no_repeat=False, min_leaf=0, allowed=None, split_costs=None):
+                 no_repeat=False, min_leaf=0, allowed=None, split_costs=None,
+                 preparation_workers=1):
         raw = np.asarray(X)
         if not _binary_matrix(raw):
             raise ValueError("X must be a nonempty binary matrix")
@@ -144,7 +153,9 @@ class Problem:
         self._all_mask = (1 << self.n) - 1
         self.all_rows = RowSet(self._all_mask)
         self.empty_rows = RowSet(0)
-        one = _column_masks(self.X)
+        if not isinstance(preparation_workers, int) or preparation_workers < 1:
+            raise ValueError("preparation_workers must be a positive integer")
+        one = _column_masks(self.X, preparation_workers)
         self._feature_masks = tuple((self._all_mask ^ m, m) for m in one)
         self._label_masks = {k: _mask(self.y == k) for k in self.labels}
         self._label_mask_items = tuple(self._label_masks.items())

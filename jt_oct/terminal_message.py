@@ -90,7 +90,29 @@ class TerminalMessages:
         self.conflicts=[(1<<int(row),int(mass)*p._uniform_weight) for row,mass in groups]
         stats['conflict_lower_bound']=sum(value for _,value in self.conflicts)
 
-    def close(self):self.workspace.close()
+    def close(self):
+        if getattr(self,'interval_oracle',None) is not None:self.interval_oracle.close()
+        self.workspace.close()
+
+    def refine(self,rows,node,used,cutoff,budget):
+        """Return a certified interval to the coordinator before exact pricing."""
+        from .interval_oracle import IntervalOracle
+        self.clock.check();tick=time.perf_counter()
+        if getattr(self,'interval_oracle',None) is None:self.interval_oracle=IntervalOracle(self.p)
+        initial=self.initial(rows,terminal_depth=self.terminal_depth)
+        lower,upper,tree,exact,counts=self.interval_oracle.solve(
+            rows,self.terminal_depth,cutoff,budget,self.clock.remaining())
+        lower=max(initial.lower,lower)
+        if initial.upper<=upper:upper,tree=initial.upper,initial.tree
+        if lower>upper+1e-9:raise AssertionError('Interval lower bound exceeds feasible upper')
+        answer=Interval(min(lower,upper),upper,tree,exact or initial.exact)
+        self.stats['interval_seconds']=self.stats.get('interval_seconds',0.)+time.perf_counter()-tick
+        for key,value in zip(('interval_expanded_nodes','interval_scanned_features','interval_timeouts'),counts):
+            self.stats[key]=self.stats.get(key,0)+int(value)
+        self.stats['interval_calls']=self.stats.get('interval_calls',0)+1
+        self.stats['interval_exact']=self.stats.get('interval_exact',0)+int(answer.exact)
+        if self.audit:self.audit(node,used,rows,answer)
+        return answer
 
     def initial(self,rows,allow_cache=True,strengthen=False,terminal_depth=None):
         if len(rows)<self.p.min_leaf:return Interval(math.inf,math.inf,None,True)
@@ -182,6 +204,8 @@ class TerminalMessages:
             self.stats[name]=self.stats.get(name,0.)+value
         self.stats[prefix+'_kernel_calls']+=out['stats']['kernel_calls']
         self.stats['sparse_d3_messages']+=int(out['stats'].get('sparse_words_used',False))
+        self.stats['compact_d3_messages']=self.stats.get('compact_d3_messages',0)+int(out['stats'].get('compact_rows_used',False))
+        self.stats['fused_join_messages']=self.stats.get('fused_join_messages',0)+int(out['stats'].get('fused_join_used',False))
         for key in ('metadata_cache_hits','metadata_sibling_reuse','metadata_native_calls',
                     'gpu_sync_calls','pipeline_prefetch_batches','pipeline_overlap_seconds'):
             self.stats[prefix+'_'+key]=self.stats.get(prefix+'_'+key,0)+out['stats'].get(key,0)

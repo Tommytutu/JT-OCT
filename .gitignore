@@ -15,3 +15,9 @@ jt_oct/_native/*.obj
 *.lib
 .idea/
 .vscode/
+
+*.dll
+*.pdb
+reports/
+results/
+*.log

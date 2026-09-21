@@ -25,6 +25,9 @@ extern "C" __global__ void resident_d3(
     floors+=s*7;dominated+=(long long)s*2*F;feature+=s*F;
     if (!allowed[f]||!allowed[(1+a)*F+g]||(repeat&&f==g)) return;
     if (dominated[a*F+f]) { if (!t) reasons[out]=2;return; }
+#ifdef COMPACT_INPUT
+    z+=(long long)s*F*W; labels+=(long long)s*CLASSES*W;
+#endif
     const U* mask=masks+(long long)s*W;
     const int* idx=indices+(long long)s*W;
     int words=nw[s]<0?W:nw[s],ff=feature[f],gg=feature[g];
@@ -89,6 +92,9 @@ extern "C" __global__ void resident_d2(
     if (!t) output[out]=1e300;
     costs+=(long long)s*7*F;allowed+=(long long)s*7*F;feature+=s*F;
     if (!allowed[f]||!allowed[(1+a)*F+g]||(repeat&&f==g)) return;
+#ifdef COMPACT_INPUT
+    z+=(long long)s*F*W; labels+=(long long)s*CLASSES*W;
+#endif
     const U* mask=masks+(long long)s*W;const int* idx=indices+(long long)s*W;
     int words=nw[s]<0?W:nw[s],ff=feature[f],gg=feature[g];
     __shared__ int left_counts[CLASSES],right_counts[CLASSES];

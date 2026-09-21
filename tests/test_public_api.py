@@ -35,3 +35,20 @@ def test_all_methods_support_depth_greater_than_five():
     assert all(result["model_depth"] == 6 for result in results)
     assert results[1]["implementation"] == "general_path_cluster_column_generation"
     assert results[2]["implementation"] == "general_streaming_junction_tree_message_passing"
+    assert all(result["backend"] == "cpu" for result in results)
+
+
+@pytest.mark.parametrize("depth", [2, 3, 4, 5])
+def test_current_solvers_match_independent_tree_search(depth):
+    from jt_oct.solvers import solve_tree_dp
+
+    rng = np.random.default_rng(831)
+    X = rng.integers(0, 2, (31, 4), dtype=np.uint8)
+    y = rng.integers(0, 3, len(X))
+    problem = make_problem(X, y, depth=depth, penalty=0.01, min_leaf=2)
+    expected = solve_tree_dp(problem, 30)["UB"]
+    for method in ("JT-LP", "JT-CG", "JT-MP"):
+        result = solve(problem, method, time_limit=30, backend="cpu")
+        assert result["status"] == "OPT"
+        assert result["UB"] == pytest.approx(expected, abs=1e-8)
+        assert result["LB"] == pytest.approx(expected, abs=1e-8)

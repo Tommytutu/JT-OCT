@@ -400,6 +400,56 @@ void solve(Workspace& w,double penalty,double seconds,int batch,int cap,int meth
       catch(const std::length_error&) {status="RESOURCE";}
     json();publish();
 }
+
+// Experiment A at D2: private child decisions are already minimized in
+// Workspace::table (SC).  EE joins the two root-signature blocks and therefore
+// leaves a single block whose minimum is obtained without an LP.
+void solve_structural_lp(Workspace& w,double penalty,double seconds,bool ee,int method) {
+    auto start=Clock::now(),deadline=start+std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(seconds));
+    w.pack_seconds=0.;w.cost_seconds=0.;int S=w.F+w.K,signature=-1,status_code=GRB_OPTIMAL;
+    double prepare_seconds=0.,ee_seconds=0.,rmp_setup=0.,rmp_insert=0.,rmp_seconds=0.,value=INF;
+    int prepared=0,common=0,rows=0,nonzeros=0,iterations=0;
+    std::vector<Choice> tab;
+    auto json=[&](const char* status){std::ostringstream os;os<<std::setprecision(17)
+      <<"{\"status\":\""<<status<<"\",\"LB\":";number(os,value);os<<",\"UB\":";number(os,value);
+      os<<",\"tree\":"<<(signature>=0?w.tree(signature,tab):"null")
+        <<",\"engine\":\"cpp_gurobi_d2_structural_v1\",\"reduction\":\""<<(ee?"sc_ee":"sc")<<"\""
+        <<",\"backend\":\""<<(w.provider?"cuda":"cpp_openmp")<<"\",\"raw_columns\":null"
+        <<",\"prepared_columns\":"<<prepared<<",\"master_domain_columns\":"<<(ee?common:prepared)
+        <<",\"remaining_clusters\":"<<(ee?1:2)<<",\"submitted_rows\":"<<rows
+        <<",\"peak_active_columns\":"<<(ee?common:prepared)<<",\"peak_rmp_nonzeros\":"<<nonzeros
+        <<",\"iterations\":"<<iterations<<",\"cost_preparation_seconds\":"<<prepare_seconds
+        <<",\"sc_seconds\":0,\"ee_seconds\":"<<ee_seconds<<",\"rmp_setup_seconds\":"<<rmp_setup
+        <<",\"rmp_insertion_seconds\":"<<rmp_insert<<",\"rmp_seconds\":"<<rmp_seconds
+        <<",\"pricing_seconds\":0,\"native_pack_seconds\":"<<w.pack_seconds
+        <<",\"native_cost_seconds\":"<<w.cost_seconds<<",\"native_seconds\":"<<elapsed(start)<<"}";
+      w.output=os.str();};
+    try {
+        if(Clock::now()>=deadline)throw Timeout{};w.count_global();auto t=Clock::now();w.prepare(deadline);
+        prepare_seconds=elapsed(t);tab=w.table(penalty);
+        for(const auto& c:tab)if(std::isfinite(c.cost))++prepared;
+        t=Clock::now();for(int s=0;s<S;++s)if(std::isfinite(tab[s].cost)&&std::isfinite(tab[S+s].cost)){
+          ++common;double candidate=tab[s].cost+tab[S+s].cost;if(candidate<value){value=candidate;signature=s;}}
+        if(signature<0){value=INF;json("INFEASIBLE");return;}if(ee){ee_seconds=elapsed(t);json("OPT");return;}
+        if(Clock::now()>=deadline)throw Timeout{};t=Clock::now();
+        if(!w.env){auto env=std::make_unique<GRBEnv>(true);env->set(GRB_IntParam_OutputFlag,0);env->start();w.env=std::move(env);}
+        GRBModel model(*w.env);model.set(GRB_IntParam_Threads,1);model.set(GRB_IntParam_Seed,20260916);
+        model.set(GRB_IntParam_Method,method);model.set(GRB_IntParam_DualReductions,0);
+        model.set(GRB_DoubleParam_FeasibilityTol,1e-9);model.set(GRB_DoubleParam_OptimalityTol,1e-9);
+        std::array<GRBConstr,2> norm{model.addConstr(GRBLinExpr()==1.),model.addConstr(GRBLinExpr()==1.)};
+        std::vector<GRBConstr> sep(S);for(int s=0;s<S;++s)sep[s]=model.addConstr(GRBLinExpr()==0.);model.update();
+        rmp_setup=elapsed(t);t=Clock::now();
+        for(int b=0;b<2;++b)for(int s=0;s<S;++s){int id=b*S+s;if(!std::isfinite(tab[id].cost))continue;
+          GRBColumn col;col.addTerm(1.,norm[b]);col.addTerm(b?-1.:1.,sep[s]);model.addVar(0.,GRB_INFINITY,tab[id].cost,GRB_CONTINUOUS,col);}
+        model.update();rmp_insert=elapsed(t);rows=model.get(GRB_IntAttr_NumConstrs);nonzeros=model.get(GRB_IntAttr_NumNZs);
+        model.set(GRB_DoubleParam_TimeLimit,std::max(1e-6,std::chrono::duration<double>(deadline-Clock::now()).count()));
+        t=Clock::now();model.optimize();rmp_seconds=elapsed(t);status_code=model.get(GRB_IntAttr_Status);iterations=1;
+        if(status_code==GRB_TIME_LIMIT||status_code==GRB_INTERRUPTED)throw Timeout{};
+        if(status_code!=GRB_OPTIMAL)throw std::runtime_error("D2 structural LP failed, status "+std::to_string(status_code));
+        if(std::abs(model.get(GRB_DoubleAttr_ObjVal)-value)>1e-7)throw std::runtime_error("D2 SC LP and EE join disagree");
+        json("OPT");
+    }catch(const Timeout&){value=INF;signature=-1;json("TIME");}
+}
 }
 
 API const char* d2cg_error() {return last_error.c_str();}
@@ -424,6 +474,12 @@ API void d2cg_cost_provider(void* handle,CostProvider provider) {
 API const char* d2cg_solve(void* handle,double penalty,double seconds,int batch,int cap,int method,Reporter report) {
     try {last_error.clear();if(!handle||penalty<0||seconds<0||batch<0||cap<1)throw std::invalid_argument("Invalid D2 solve arguments");
         auto& w=*static_cast<Workspace*>(handle);solve(w,penalty,seconds,batch,cap,method,report);return w.output.c_str();
+    }catch(const GRBException& e){last_error="Gurobi "+std::to_string(e.getErrorCode())+": "+e.getMessage();return nullptr;}
+     catch(const std::exception& e){last_error=e.what();return nullptr;}
+}
+API const char* d2cg_structural(void* handle,double penalty,double seconds,int ee,int method) {
+    try {last_error.clear();if(!handle||penalty<0||seconds<0||(ee!=0&&ee!=1))throw std::invalid_argument("Invalid D2 structural arguments");
+        auto& w=*static_cast<Workspace*>(handle);solve_structural_lp(w,penalty,seconds,ee!=0,method);return w.output.c_str();
     }catch(const GRBException& e){last_error="Gurobi "+std::to_string(e.getErrorCode())+": "+e.getMessage();return nullptr;}
      catch(const std::exception& e){last_error=e.what();return nullptr;}
 }

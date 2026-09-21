@@ -16,6 +16,9 @@ extern "C" __global__ void resident_d3_fused(
     floors+=s*7;dominated+=(long long)s*2*F;feature+=s*F;
     if(!allowed[f]||!allowed[(1+a)*F+g]||(repeat&&f==g))return;
     if(dominated[a*F+f]){if(!t)reasons[out]=2;return;}
+#ifdef COMPACT_INPUT
+    z+=(long long)s*F*W; labels+=(long long)s*COMPACT_LABELS*W;
+#endif
     const U* mask=masks+(long long)s*W;
     const int* idx=indices+(long long)s*W;
     int words=nw[s]<0?W:nw[s],ff=feature[f],gg=feature[g];
