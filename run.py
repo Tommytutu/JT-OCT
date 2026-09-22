@@ -1,8 +1,15 @@
 """Run JT-LP, JT-CG, or JT-MP on a supplied benchmark dataset."""
 import argparse
 import json
+import os
 from pathlib import Path
 import time
+
+
+# Match the numerical-library settings used for the paper runs.  setdefault
+# keeps an explicit user choice intact.
+for variable in ('OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'OPENBLAS_NUM_THREADS'):
+    os.environ.setdefault(variable, '1')
 
 
 def main():
@@ -24,6 +31,13 @@ def main():
     configs = cg_configs if args.method=='JT-CG' else [c for c in other_configs if c['method']==args.method]
     job = next(c for c in configs if (c['dataset'],c['depth'],c['penalty']) ==
                (args.dataset,args.depth,args.penalty))
+
+    # The paper runner loaded the contracted solver before dataset preparation.
+    # Preserve that order because native/CUDA initialization otherwise occurs
+    # after Problem construction and measurably slows the D4/D5 path.
+    if args.method in ('JT-CG', 'JT-MP') and args.depth >= 4:
+        from jt_oct.contract_cg import ContractOptions, solve_contracted_cg
+
     import numpy as np
     with np.load(root/'datasets'/(args.dataset+'.npz'), allow_pickle=False) as data:
         x, y = data['X'], data['y'].astype(np.int64)
@@ -56,7 +70,6 @@ def main():
             else:
                 result=solve_jt_dp_shallow_cpp(problem,args.seconds,options=options,threads=threads)
         else:
-            from jt_oct.contract_cg import ContractOptions, solve_contracted_cg
             options=ContractOptions(**job['options'])
             backend='auto' if args.method=='JT-CG' else job['backend']
             if args.method=='JT-MP':

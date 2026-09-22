@@ -63,6 +63,11 @@ python run.py --method JT-MP --dataset banknote --depth 4 --penalty 0.01 --outpu
 The bundled command line uses the recorded configuration for the selected
 dataset, depth, penalty, and method.
 
+For reproducible timings, the runner defaults `OMP_NUM_THREADS`,
+`MKL_NUM_THREADS`, and `OPENBLAS_NUM_THREADS` to `1` and preloads the depth-4/5
+contracted backend before preparing the dataset. Existing environment-variable
+values are preserved, so these defaults can be overridden explicitly.
+
 | Argument | Values | Default | Meaning |
 |---|---|---:|---|
 | `--method` | `JT-LP`, `JT-CG`, `JT-MP` | `JT-CG` | Exact solution method. |
