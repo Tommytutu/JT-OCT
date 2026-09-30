@@ -112,20 +112,26 @@ class ContractOptions:
 
 
 def automatic_contract_configuration(n, features, classes, depth, options=None,
-                                     gpu_available=True):
+                                     gpu_available=True, min_leaf=0):
     """Return the measured-profile D4/D5 backend and safe exact options.
 
-    Small problems avoid CUDA startup.  The delayed-RMP policy is limited to
-    the two validated high-dimensional binary profiles (FICO/Spambase scale),
-    expressed only through problem features rather than dataset identities.
+    Small problems avoid CUDA startup. Native D5 uses the measured medium
+    binary and large binary/three-class profiles. Parent transfer is enabled
+    only without a positive minimum-leaf constraint. Profiles depend on
+    problem dimensions, not dataset identities.
     """
     o=options or ContractOptions()
     use_gpu=bool(gpu_available and (int(features)>=48 or int(n)>=10000))
     delayed=bool(int(depth)==5 and int(classes)==2 and
                  int(features)>=100 and int(n)<100000)
+    large_native=bool(o.native_d3 and int(depth)==5 and 2<=int(classes)<=3 and
+                      100<=int(features)<=384 and int(n)>=100000 and
+                      int(min_leaf)==0 and o.tail_depth==3)
+    delayed=delayed or large_native
     return dict(backend='gpu' if use_gpu else 'cpp',options=replace(o,
         resident_gpu=use_gpu,oracle_batch=(256 if o.native_d3 and delayed else 64) if use_gpu else 16,
-        rmp_every_batches=(8 if o.native_d3 else 4) if delayed else 1,class_bound=int(classes)>2))
+        rmp_every_batches=(8 if o.native_d3 else 4) if delayed else 1,class_bound=int(classes)>2,
+        native_parent_bounds=o.native_parent_bounds or large_native))
 
 
 def _capacity_batch(ids, reduced_cost, active_count, limit, blocks, block_size):
@@ -374,7 +380,7 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
             from .auto_dp import hardware
             available=hardware()['gpu_available']
         selected=automatic_contract_configuration(p.n,p.F,len(p.labels),p.depth,o,
-            available)
+            available,p.min_leaf)
         backend,o=selected['backend'],selected['options']
         if o.native_d3:backend='gpu';o=replace(o,resident_gpu=True)
     if backend not in ('cpp','gpu'):raise ValueError('Contracted CG backend must be auto, cpp or gpu')

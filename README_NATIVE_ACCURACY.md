@@ -12,7 +12,7 @@ python run.py --method JT-CG --dataset fico --depth 5 --penalty 0.01 --d3-oracle
 
 Use depth 4 for D4. The default remains `--d3-oracle legacy` for reproducibility
 and for configurations outside the new service's supported domain. Native mode
-requires binary labels, uniform positive observation weights, STOP, shared
+requires 2 to 32 labels, uniform positive observation weights, STOP, shared
 feature choices and split costs, D4/D5 and D3 tails. Invalid requests fail
 explicitly. It reports `JT-CG-D3Tail-GPU-Native` and the effective options.
 
@@ -33,9 +33,15 @@ message bounds cover every unresolved state. `OPT` still requires a global gap
 at most 1e-7. A deadline-interrupted native query returns a feasible witness,
 never a partial exact value.
 
-The geometry cache budget is at most 3 GiB and at most one quarter of the CG
+The original binary service's geometry cache budget is at most 3 GiB and at most one quarter of the CG
 memory setting. This is a cache budget, not a bound on total process memory.
 Preparation runs in the background and is cancelled/joined on shutdown.
+Multiclass data and datasets with at least 200,000 observations instead use
+`accuracy_multiclass.dll`. This accuracy-only service packs rows into words
+grouped by class, reuses CPU buffers, and streams large domains without the
+previous shared-memory size restriction. Its feature equivalence hashes are
+always verified against the full bit patterns; hash collisions never discard
+a distinct predicate. It does not use the background geometry cache.
 The Python object is sequential and tied to its immutable parent Problem.
 The legacy-compatible `kernel_calls` counter counts service requests in native
 mode, including requests resolved without a GPU launch. It is not a physical
@@ -53,6 +59,7 @@ To rebuild with MSVC and the installed NVIDIA Python packages:
 
 ```powershell
 .\build_accuracy_oracle.ps1 -CudaPackages 'path\to\site-packages\nvidia'
+.\build_accuracy_oracle.ps1 -Target accuracy_multiclass -CudaPackages 'path\to\site-packages\nvidia'
 python -m unittest discover -s tests -v
 ```
 
@@ -61,6 +68,37 @@ They compare to independent exhaustive split enumeration, test routed domains,
 constant/duplicate/complementary features, contradictory samples, minimum leaf
 sizes, scaled weights, arbitrary binary labels, deadlines, cache-free execution,
 and full D4/D5 CG certificates. A legacy CPU regression is included.
+The general service is additionally checked against exhaustive multiclass
+enumeration and the independent legacy CPU D3 solver, including large row
+sets, symmetric histograms, and imbalanced binary dominance certificates.
+
+## Large Table 3 cases
+
+For native D5 with 100--384 features, at least 100,000 observations, 2--3
+classes, and `min_leaf=0`, automatic dispatch uses batches of 256, up to eight
+pricing batches per master solve, and a bounded parent-reference preparation
+phase. All preparation is included in the solver time limit.
+
+```powershell
+python run.py --method JT-CG --dataset diabetic --depth 5 --penalty 0 --d3-oracle native --threads 8 --output results/diabetic_native_d5_p0.json
+python run.py --method JT-CG --dataset diabetic --depth 5 --penalty 0.01 --d3-oracle native --threads 8 --output results/diabetic_native_d5_p001.json
+python run.py --method JT-CG --dataset transactions --depth 5 --penalty 0 --d3-oracle native --threads 8 --output results/transactions_native_d5_p0.json
+```
+
+Three-feature class histograms reuse each unordered intersection across all
+parent orderings and routed sides. Exact intersection bounds avoid counting
+when marginals already determine an intersection. On imbalanced binary data,
+a triple may be skipped only after each of its eight cells is certified to
+retain the majority label. Such a split cannot improve STOP with nonnegative
+penalties. Uncertified triples receive complete counts.
+
+For a reference domain T and target domain S, a valid lower bound transfers as
+`LB(S) >= LB(T) - |T minus S| * observation_weight`. The same inequality holds
+with a prescribed root. This follows by extending any target tree to the
+reference observations: at most one error is added per extra observation,
+and its split penalty is unchanged. Parent references and local root bounds
+are used only with `min_leaf=0`; empty branches can then be contracted. The
+global certificate still covers every unresolved JT signature.
 
 To reproduce the comparison against an unchanged JT-OCT checkout and General JT:
 
