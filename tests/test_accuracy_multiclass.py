@@ -7,6 +7,20 @@ from jt_oct.d3_optimized import D3Workspace, D3Options
 from jt_oct.contract_cg import ContractOptions, solve_contracted_cg
 
 class MulticlassAccuracyTests(unittest.TestCase):
+    def test_binary_histogram_dominance(self):
+        rng=np.random.default_rng(913)
+        x=(rng.random((10000,70))<.1).astype(np.uint8)
+        y=x[:,0]&x[:,1];y[rng.choice(len(x),80,replace=False)]=1
+        for flipped in (False,True):
+            p=Problem(x,1-y if flipped else y,5,0.)
+            with D3Workspace(p,'gpu',2,D3Options(native_accuracy=True)) as w, D3Workspace(p,'cpp',2,D3Options()) as reference:
+                w.native_accuracy=NativeAccuracyOracle(w,force_general=True)
+                for d in (2,3):
+                    got=w.solve_many([dict(rows=p.all_rows)],30,d)[0]
+                    expected=reference.solve_many([dict(rows=p.all_rows)],30,d)[0]
+                    self.assertEqual(got['status'],'OPT');self.assertEqual(expected['status'],'OPT')
+                    self.assertAlmostEqual(got['value'],expected['value'],places=10)
+
     def test_histogram_kernel(self):
         rng=np.random.default_rng(899)
         x=rng.integers(0,2,(10000,70),dtype=np.uint8)

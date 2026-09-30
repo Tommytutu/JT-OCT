@@ -7,7 +7,7 @@
   "cm_mcc_gpu.hpp": {
     "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm_mcc_gpu.hpp",
     "upstream_sha256": "e026d7cc24f3b0b679dd55889416c08e370f2113b1c4712f69c820ee33bde109",
-    "vendored_sha256": "28d0d755eeed15323462a7c72249cfb29b68050ec7e7fd5e0f638cd06328c2c9"
+    "vendored_sha256": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d"
   },
   "cm_shallow_linear.hpp": {
     "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm_shallow_linear.hpp",

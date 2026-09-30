@@ -18,7 +18,7 @@ struct MultiOracle {
     std::vector<Reference> references;
     CUdeviceptr eligible=0,root_values=0;
     CUdeviceptr pair_histogram=0,triple_histogram=0;
-    CUfunction pair_histogram_kernel,triple_histogram_kernel,histogram_cost_kernel;
+    CUfunction pair_histogram_kernel,triple_histogram_kernel,histogram_cost_kernel,binary_histogram_kernel;
     std::array<uint64_t,3> diagnostics{}; // considered roots, excluded roots, transfer-only solves
     static std::vector<unsigned char> bin(const unsigned char*y,int n){std::vector<unsigned char>b(n);for(int i=0;i<n;++i)b[i]=y[i]!=0;return b;}
     MultiOracle(const unsigned char*x,const unsigned char*yy,int n,int f,int k,int ml,int nt,const wchar_t*rtc)
@@ -104,24 +104,41 @@ extern "C" __global__ void accuracy_root(int F,int ml,const int*counts,const int
         cm5::MccGpu::check(cuModuleGetFunction(&pair_histogram_kernel,module,"accuracy_pair_hist"));
         cm5::MccGpu::check(cuModuleGetFunction(&triple_histogram_kernel,module,"accuracy_triple_hist"));
         cm5::MccGpu::check(cuModuleGetFunction(&histogram_cost_kernel,module,"accuracy_hist_cost"));
+        cm5::MccGpu::check(cuModuleGetFunction(&binary_histogram_kernel,module,"accuracy_binary_triples"));
         auto alloc=[](CUdeviceptr&p,size_t n){cm5::MccGpu::check(cuMemAlloc(&p,n));};int W=data.W+K;
         alloc(zero,size_t(W)*f*8);alloc(mask,size_t(W)*8);alloc(ends,K*4);alloc(ids,f*4);alloc(counts,K*4);alloc(left,size_t(K)*f*4);
         alloc(costs,size_t(f)*f*4*8);alloc(actions,size_t(f)*f*4*4);alloc(side_cost,f*2*8);alloc(side_choice,f*2*4);alloc(value_out,8);alloc(tree_out,16*4);
         alloc(eligible,f*4);alloc(root_values,f*8);
-        if(K==3&&f>=64&&f<=384){alloc(pair_histogram,size_t(f)*(f-1)/2*K*4);alloc(triple_histogram,size_t(f)*(f-1)*(f-2)/6*K*4);}
+        if(K<=3&&f>=64&&f<=384){alloc(pair_histogram,size_t(f)*(f-1)/2*K*4);alloc(triple_histogram,size_t(f)*(f-1)*(f-2)/6*K*4);}
     }
     ~MultiOracle(){cuCtxSetCurrent(owner.context);for(auto p:{zero,mask,ends,ids,counts,left,costs,actions,side_cost,side_choice,value_out,tree_out,eligible,root_values,pair_histogram,triple_histogram})if(p)cuMemFree(p);if(module)cuModuleUnload(module);}
     struct Geometry {std::vector<int>ids,counts,left,end;std::vector<cm5::U>zero,mask;};
-    Geometry geometry(const cm5::U*r){
-        Geometry g;g.counts.assign(K,0);std::vector<std::vector<std::pair<int,cm5::U>>> words(K);
+    Geometry geometry_scratch;
+    std::vector<std::vector<std::pair<int,cm5::U>>> word_scratch;
+    std::vector<cm5::U> packing_scratch;
+    std::vector<int> count_scratch;
+    Geometry& geometry(const cm5::U*r){
+        auto&g=geometry_scratch;g.ids.clear();g.end.clear();g.mask.clear();g.counts.assign(K,0);
+        auto&words=word_scratch;words.resize(K);for(auto&v:words)v.clear();
         for(int c=0;c<K;++c)for(int w=0;w<data.W;++w){auto bits=r[w]&labels[size_t(c)*data.W+w];if(bits){words[c].push_back({w,bits});g.counts[c]+=int(__popcnt64(bits));}}
         int W=0;for(int c=0;c<K;++c){W+=(g.counts[c]+63)/64;g.end.push_back(W);for(int w=0;w<(g.counts[c]+63)/64;++w)g.mask.push_back(w==(g.counts[c]/64)&&g.counts[c]%64?(cm5::U(1)<<(g.counts[c]%64))-1:~cm5::U(0));}
-        std::vector<cm5::U> all(size_t(data.F)*W);std::vector<int>lc(size_t(data.F)*K);
+        auto&all=packing_scratch;all.resize(size_t(data.F)*W);std::fill(all.begin(),all.end(),0);
+        auto&lc=count_scratch;lc.resize(size_t(data.F)*K);
         #pragma omp parallel for schedule(static) num_threads(threads)
         for(int f=0;f<data.F;++f){int start=0;for(int c=0;c<K;++c){int position=0,count=0;for(auto word:words[c]){cm5::U bits=_pext_u64(data.zero[size_t(f)*data.W+word.first],word.second);int size=int(__popcnt64(word.second));count+=int(__popcnt64(bits));int at=start+position/64,shift=position%64;all[size_t(f)*W+at]|=bits<<shift;if(shift&&shift+size>64)all[size_t(f)*W+at+1]|=bits>>(64-shift);position+=size;}lc[size_t(c)*data.F+f]=count;start=g.end[c];}}
-        std::unordered_set<std::string>seen;std::vector<cm5::U> complement(W);int N=std::accumulate(g.counts.begin(),g.counts.end(),0);
+        // Hash canonical bit patterns without constructing full-sized string
+        // keys. Every hash match is checked word by word, so collisions cannot
+        // remove distinct features. Complement predicates share one class.
+        std::unordered_map<uint64_t,std::vector<int>> seen;seen.reserve(data.F);
+        int N=std::accumulate(g.counts.begin(),g.counts.end(),0);
         for(int f=0;f<data.F;++f){int n=0;for(int c=0;c<K;++c)n+=lc[size_t(c)*data.F+f];if(std::min(n,N-n)<std::max(1,data.min_leaf))continue;auto p=all.data()+size_t(f)*W;
-            for(int w=0;w<W;++w)complement[w]=p[w]^g.mask[w];std::string a(reinterpret_cast<char*>(p),W*8),b(reinterpret_cast<char*>(complement.data()),W*8);if(seen.insert(std::min(a,b)).second)g.ids.push_back(f);}
+            bool invert=(p[0]&1)!=0;uint64_t hash=0x9e3779b97f4a7c15ULL;
+            for(int w=0;w<W;++w){uint64_t v=p[w]^(invert?g.mask[w]:0);hash^=v+0x9e3779b97f4a7c15ULL+(hash<<6)+(hash>>2);}
+            auto& bucket=seen[hash];bool duplicate=false;
+            for(int previous:bucket){const auto*q=all.data()+size_t(previous)*W;bool flip=((p[0]^q[0])&1)!=0;bool equal=true;
+                for(int w=0;w<W;++w)if((p[w]^q[w])!=(flip?g.mask[w]:0)){equal=false;break;}
+                if(equal){duplicate=true;break;}}
+            if(!duplicate){bucket.push_back(f);g.ids.push_back(f);}}
         int F=int(g.ids.size());g.zero.resize(size_t(F)*W);g.left.resize(size_t(F)*K);
         for(int j=0;j<F;++j){for(int w=0;w<W;++w)g.zero[W>64?size_t(j)*W+w:size_t(w)*F+j]=all[size_t(g.ids[j])*W+w];for(int c=0;c<K;++c)g.left[size_t(c)*F+j]=lc[size_t(c)*data.F+g.ids[j]];}
         return g;
@@ -140,12 +157,15 @@ extern "C" __global__ void accuracy_root(int F,int ml,const int*counts,const int
         references.push_back({std::vector<cm5::U>(r,r+data.W),std::move(bounds),tree,value,gamma,depth,count,largest});
     }
     bool solve(const cm5::U*r,int depth,double gamma,double deadline,cm5::Tree&tree,double&value){
-        if(cm5::now()>=deadline)return false;double start=cm5::now();auto g=geometry(r);prepare_seconds+=cm5::now()-start;int F=int(g.ids.size()),W=int(g.mask.size()),ml=std::max(1,data.min_leaf),N=std::accumulate(g.counts.begin(),g.counts.end(),0);
+        if(cm5::now()>=deadline)return false;double start=cm5::now();auto&g=geometry(r);prepare_seconds+=cm5::now()-start;int F=int(g.ids.size()),W=int(g.mask.size()),ml=std::max(1,data.min_leaf),N=std::accumulate(g.counts.begin(),g.counts.end(),0);
         int label=int(std::max_element(g.counts.begin(),g.counts.end())-g.counts.begin());value=N-g.counts[label];tree.a[1]=-1-label;if(!F||value<=gamma)return true;if(cm5::now()>=deadline)return false;
         std::vector<double> bounds(data.F,gamma);cm5::Tree incumbent=tree;double upper=value;std::vector<int> viable(F,1);
         if(depth==3&&!data.min_leaf){int best_ref=-1,min_removed=INT_MAX;
             for(int i=0;i<int(references.size());++i){const auto&ref=references[i];if(ref.gamma!=gamma||ref.depth!=depth||ref.largest_bound-std::max(0,ref.size-N)<=gamma)continue;int removed=0;for(int w=0;w<data.W;++w)removed+=int(__popcnt64(ref.rows[w]&~r[w]));
-                for(int f=0;f<data.F;++f)bounds[f]=std::max(bounds[f],ref.roots[f]-removed-1e-7);
+                // With gamma=0 all costs and differences are exact integers.
+                // An epsilon would prevent useful equality certificates.
+                double margin=gamma==0?0.:1e-7;
+                for(int f=0;f<data.F;++f)bounds[f]=std::max(bounds[f],ref.roots[f]-removed-margin);
                 if(removed<min_removed){min_removed=removed;best_ref=i;}}
             if(best_ref>=0){cm5::Tree candidate;double cost=restrict_tree(references[best_ref].tree,std::vector<cm5::U>(r,r+data.W),candidate,1,1,gamma);if(cost<upper){upper=cost;incumbent=candidate;}}
             for(int f=0;f<F;++f)viable[f]=bounds[g.ids[f]]<upper-1e-8;
@@ -161,11 +181,16 @@ extern "C" __global__ void accuracy_root(int F,int ml,const int*counts,const int
         cuCtxSetCurrent(owner.context);start=cm5::now();copy(zero,g.zero);copy(mask,g.mask);copy(ends,g.end);copy(ids,g.ids);copy(counts,g.counts);copy(left,g.left);copy(eligible,viable);
         int block=W>64?128:64;CUfunction kernel=W>64?warp_kernel:cost_kernel;
         int streamed=size_t(W)*8+K*block*4+64*12>size_t(owner.shared_limit);int tasks=2*F*(F-1);
-        bool histogram=triple_histogram&&F>=64&&W>=128&&(N-g.counts[label])>.15*N;
+        bool binary_histogram=K==2&&(N-g.counts[label])<=.15*N;
+        bool histogram=triple_histogram&&F>=64&&W>=128&&(binary_histogram||(K==3&&(N-g.counts[label])>.15*N));
         if(histogram){
             int pairs=F*(F-1)/2,triples=F*(F-1)*(F-2)/6;
             void*pa[]={&zero,&ends,&F,&W,&pairs,&pair_histogram};cm5::MccGpu::check(cuLaunchKernel(pair_histogram_kernel,(pairs+7)/8,1,1,256,1,1,0,nullptr,pa,nullptr));
-            if(kernel_depth==3)for(int first=0;first<triples;first+=262144){if(cm5::now()>=deadline){gpu_seconds+=cm5::now()-start;return false;}int count=std::min(262144,triples-first);void*ta[]={&zero,&ends,&F,&W,&first,&count,&triple_histogram,&eligible,&counts,&left,&pair_histogram};cm5::MccGpu::check(cuLaunchKernel(triple_histogram_kernel,(count+7)/8,1,1,256,1,1,0,nullptr,ta,nullptr));if(first+count<triples)cm5::MccGpu::check(cuCtxSynchronize());}
+            int tile=binary_histogram?8192:262144;
+            if(kernel_depth==3)for(int first=0;first<triples;first+=tile){if(cm5::now()>=deadline){gpu_seconds+=cm5::now()-start;return false;}int count=std::min(tile,triples-first);
+                if(binary_histogram){int minority=1-label;void*ta[]={&zero,&mask,&ends,&F,&W,&first,&count,&triple_histogram,&eligible,&counts,&left,&pair_histogram,&minority};cm5::MccGpu::check(cuLaunchKernel(binary_histogram_kernel,count,1,1,256,1,1,0,nullptr,ta,nullptr));}
+                else{void*ta[]={&zero,&ends,&F,&W,&first,&count,&triple_histogram,&eligible,&counts,&left,&pair_histogram};cm5::MccGpu::check(cuLaunchKernel(triple_histogram_kernel,(count+7)/8,1,1,256,1,1,0,nullptr,ta,nullptr));}
+                if(first+count<triples)cm5::MccGpu::check(cuCtxSynchronize());}
             void*ca[]={&F,&ml,&kernel_depth,&counts,&left,&ids,&pair_histogram,&triple_histogram,&eligible,&gamma,&costs,&actions};cm5::MccGpu::check(cuLaunchKernel(histogram_cost_kernel,pairs,1,1,64,1,1,0,nullptr,ca,nullptr));
         }else{
             for(int first=0;first<tasks;first+=16384){if(cm5::now()>=deadline){gpu_seconds+=cm5::now()-start;return false;}int count=std::min(16384,tasks-first);void*args[]={&zero,&mask,&ends,&ids,&F,&W,&ml,&kernel_depth,&gamma,&first,&count,&costs,&actions,&streamed,&counts,&left,&eligible};cm5::MccGpu::check(cuLaunchKernel(kernel,count,1,1,block,1,1,streamed?0:W*8,nullptr,args,nullptr));if(first+count<tasks)cm5::MccGpu::check(cuCtxSynchronize());}
