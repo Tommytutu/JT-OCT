@@ -10,3 +10,12 @@ results/
 gurobi.log
 gurobi.lic
 reports/native_accuracy*/raw/
+reports/hard_cases_20260930/
+reports/hard_cases_final_*/*.progress.jsonl
+reports/hard_cases_final_*/*.console.log
+reports/hard_cases_final_*/diabetic_*.json
+reports/hard_cases_final_*/transactions_*.json
+reports/hard_cases_final_*/fico_*.json
+!reports/hard_cases_final_*/fico_regression.json
+jt_oct/_native/*_trial.dll
+jt_oct/_native/*_next.dll

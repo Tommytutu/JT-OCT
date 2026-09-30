@@ -1,0 +1,78 @@
+[
+  {
+    "status": "OPT",
+    "LB": 0.27603021321350013,
+    "UB": 0.27603021321350013,
+    "call_wall_seconds": 0.710436999797821,
+    "process_wall_seconds": 0.9601564998738468,
+    "independent_audit": {
+      "errors": 2887,
+      "splits": 15,
+      "realized_depth": 4,
+      "objective": 0.27603021321350035,
+      "independent_tree_audit": true
+    },
+    "dataset": "fico",
+    "depth": 4,
+    "penalty": 0.0,
+    "previous_native_UB": 0.27603021321350013,
+    "exact_objective_match": true
+  },
+  {
+    "status": "OPT",
+    "LB": 0.3172559518118365,
+    "UB": 0.3172559518118365,
+    "call_wall_seconds": 0.6181885998230428,
+    "process_wall_seconds": 0.8544032000936568,
+    "independent_audit": {
+      "errors": 3109,
+      "splits": 2,
+      "realized_depth": 2,
+      "objective": 0.3172559518118367,
+      "independent_tree_audit": true
+    },
+    "dataset": "fico",
+    "depth": 4,
+    "penalty": 0.01,
+    "previous_native_UB": 0.3172559518118365,
+    "exact_objective_match": true
+  },
+  {
+    "status": "OPT",
+    "LB": 0.26493928673869377,
+    "UB": 0.26493928673869377,
+    "call_wall_seconds": 43.28661839989945,
+    "process_wall_seconds": 43.531824600184336,
+    "independent_audit": {
+      "errors": 2771,
+      "splits": 31,
+      "realized_depth": 5,
+      "objective": 0.26493928673869394,
+      "independent_tree_audit": true
+    },
+    "dataset": "fico",
+    "depth": 5,
+    "penalty": 0.0,
+    "previous_native_UB": 0.26493928673869377,
+    "exact_objective_match": true
+  },
+  {
+    "status": "OPT",
+    "LB": 0.3172559518118365,
+    "UB": 0.3172559518118365,
+    "call_wall_seconds": 32.069848200073466,
+    "process_wall_seconds": 32.33211309998296,
+    "independent_audit": {
+      "errors": 3109,
+      "splits": 2,
+      "realized_depth": 2,
+      "objective": 0.3172559518118367,
+      "independent_tree_audit": true
+    },
+    "dataset": "fico",
+    "depth": 5,
+    "penalty": 0.01,
+    "previous_native_UB": 0.3172559518118365,
+    "exact_objective_match": true
+  }
+]

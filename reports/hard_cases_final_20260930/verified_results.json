@@ -1,0 +1,2816 @@
+[
+  {
+    "status": "OPT",
+    "LB": 0.4168189768685022,
+    "UB": 0.41681897686851066,
+    "call_wall_seconds": 273.7510685999878,
+    "process_wall_seconds": 274.1314153999556,
+    "proof_seconds": 273.47521439986303,
+    "tree": {
+      "feature": 205,
+      "left": {
+        "feature": 37,
+        "left": {
+          "feature": 206,
+          "left": {
+            "feature": 42,
+            "left": {
+              "feature": 39,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 248,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          },
+          "right": {
+            "feature": 241,
+            "left": {
+              "feature": 59,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 201,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 63,
+          "left": {
+            "feature": 68,
+            "left": {
+              "feature": 77,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 104,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 31,
+            "left": {
+              "feature": 238,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 206,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": 203,
+        "left": {
+          "feature": 37,
+          "left": {
+            "feature": 239,
+            "left": {
+              "feature": 59,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 113,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 241,
+            "left": {
+              "feature": 95,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 204,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 104,
+          "left": {
+            "feature": 202,
+            "left": {
+              "feature": 28,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 150,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 124,
+            "left": {
+              "feature": 28,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 218,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "objective": 0.41681897686851066,
+      "loss": 0.41681897686851066,
+      "misclassified": 42418,
+      "split_cost": 0.0,
+      "split_nodes": 31,
+      "leaves": 32,
+      "realized_depth": 5,
+      "features": [
+        28,
+        31,
+        37,
+        39,
+        42,
+        59,
+        63,
+        68,
+        77,
+        95,
+        104,
+        113,
+        124,
+        150,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        218,
+        238,
+        239,
+        241,
+        248
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": true,
+        "shallow_certificate": false,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 259,
+      "batch_messages": 56413,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217728,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 2.947939390366134e-05,
+      "setup_seconds": 0.13945159991271794,
+      "terminal_queries": 56449,
+      "class_capacity_queries": 183290,
+      "class_capacity_improvements": 0,
+      "class_capacity_bound_gain": 0.0,
+      "d3_seconds": 239.85086070210673,
+      "d3_calls": 56420,
+      "warm_d3_calls": 608,
+      "d3_metadata_seconds": 34.94877452868968,
+      "d3_cost_and_h_reduction_seconds": 194.9211439716164,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 9.693520900793374,
+      "d3_backend_setup_seconds": 0.2874213010072708,
+      "d3_kernel_calls": 56420,
+      "compact_d3_messages": 56420,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 17772300,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 13254634,
+      "native_root_pruned": 362482,
+      "native_transfer_exact": 232,
+      "d3_optimal_calls": 56420,
+      "cache_peak_entries": 7824,
+      "full_domain_bound_improvements": 55545,
+      "warm_roots_completed": 1,
+      "warm_seconds": 0.4411232001148164,
+      "cache_hits": 417,
+      "parent_reference_states": 630,
+      "parent_bound_improvements": 134323,
+      "terminal_queries_without_oracle": 29,
+      "parent_reference_seconds": 3.3257502999622375,
+      "parent_reference_complete": 1,
+      "reference_D4_LB": 0.4211917536308787,
+      "reference_D4_UB": 0.4211917536308787,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 10.080971000017598,
+      "candidate_slots": 400692,
+      "terminal_contexts": 395640,
+      "unique_terminal_states": 126628,
+      "initial_exact_terminal_states": 3368,
+      "rmp_setup_seconds": 0.006102900020778179,
+      "rmp_update_seconds": 2.2904949991498142,
+      "peak_active_columns": 200000,
+      "rmp_seconds": 7.20419520046562,
+      "iterations": 29,
+      "message_lower_bound": 0.4168189768685022,
+      "roots_excludable_by_message": 315,
+      "roots_excluded_by_message": 315,
+      "jt_certificate_updates": 401,
+      "message_seconds": 0.368967701215297,
+      "column_admission_requested": 291829,
+      "column_admission_admitted": 286602,
+      "column_admission_deferred": 5227,
+      "pricing_seconds": 1.621432397980243,
+      "last_trace_seconds": 273.475211400073,
+      "state_screened_candidates": 8280242,
+      "state_screen_seconds": 0.7460963982157409,
+      "bundle_states_selected": 45060,
+      "selected_pricing_states": 55812,
+      "oracle_wall_seconds": 241.77237339899875,
+      "cache_evictions": 48789,
+      "capacity_message_lower_bound": 0.4167305386837913,
+      "capacity_message_seconds": 0.31028159940615296,
+      "capacity_bundle_states_selected": 45060,
+      "capacity_pricing_interleaves": 177,
+      "capacity_throttled_batches": 8,
+      "capacity_rebuilds": 1,
+      "capacity_evicted_columns": 100000,
+      "capacity_rebuild_seconds": 0.10829890007153153,
+      "last_compaction_iteration": 213,
+      "exact_terminal_states": 59180,
+      "unresolved_terminal_states": 67448,
+      "final_columns": 186606
+    },
+    "certificate": {
+      "alpha_sum": 0.4168189768685022,
+      "pricing_lower_bounds": [
+        -0.1900929583564429,
+        -0.4159051156574887,
+        -0.4163964388902164,
+        -0.2518424621189788
+      ],
+      "computed_LB": -0.8574179981546246,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": 0,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.4168189768685022
+    },
+    "manifest": {
+      "dataset": "diabetic",
+      "depth": 5,
+      "penalty": 0.0,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "diabetic",
+        "depth": 5,
+        "penalty": 0.0,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": false,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 101766,
+      "F": 315,
+      "classes": [
+        0,
+        1,
+        2
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:16:17+0800"
+    },
+    "independent_audit": {
+      "errors": 42418,
+      "splits": 31,
+      "realized_depth": 5,
+      "objective": 0.4168189768685023,
+      "independent_tree_audit": true
+    },
+    "run_file": "diabetic_D5_L0_r1.json"
+  },
+  {
+    "status": "OPT",
+    "LB": 0.4452042921997524,
+    "UB": 0.4452042921997612,
+    "call_wall_seconds": 102.83191569987684,
+    "process_wall_seconds": 103.19694019993767,
+    "proof_seconds": 102.59312009997666,
+    "tree": {
+      "feature": 206,
+      "left": {
+        "label": 1
+      },
+      "right": {
+        "label": 2
+      }
+    },
+    "metrics": {
+      "objective": 0.4452042921997612,
+      "loss": 0.4352042921997612,
+      "misclassified": 44289,
+      "split_cost": 0.01,
+      "split_nodes": 1,
+      "leaves": 2,
+      "realized_depth": 1,
+      "features": [
+        206
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": true,
+        "shallow_certificate": true,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 93,
+      "batch_messages": 19709,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217640,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 2.947939390366134e-05,
+      "setup_seconds": 0.13284490001387894,
+      "terminal_queries": 19729,
+      "class_capacity_queries": 146757,
+      "class_capacity_improvements": 12899,
+      "class_capacity_bound_gain": 73.83742743434354,
+      "d3_seconds": 84.0156457000412,
+      "d3_calls": 19712,
+      "warm_d3_calls": 256,
+      "d3_metadata_seconds": 14.105745208216831,
+      "d3_cost_and_h_reduction_seconds": 68.74502639076672,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 0.866292901802808,
+      "d3_backend_setup_seconds": 0.2985811992548406,
+      "d3_kernel_calls": 19712,
+      "compact_d3_messages": 19712,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 6209280,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 5368127,
+      "native_root_pruned": 283863,
+      "native_transfer_exact": 462,
+      "d3_optimal_calls": 19712,
+      "cache_peak_entries": 7587,
+      "full_domain_bound_improvements": 49702,
+      "warm_roots_completed": 1,
+      "warm_seconds": 0.33564300020225346,
+      "cache_hits": 230,
+      "parent_reference_states": 270,
+      "parent_bound_improvements": 76477,
+      "terminal_queries_without_oracle": 17,
+      "parent_reference_seconds": 1.50275110010989,
+      "parent_reference_complete": 0,
+      "reference_D4_LB": 0.4452042921997523,
+      "reference_D4_UB": 0.4452042921997523,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 9.860190100036561,
+      "candidate_slots": 400692,
+      "terminal_contexts": 395640,
+      "unique_terminal_states": 126628,
+      "initial_exact_terminal_states": 46334,
+      "rmp_setup_seconds": 0.006499800132587552,
+      "rmp_update_seconds": 1.3499300996772945,
+      "peak_active_columns": 200000,
+      "rmp_seconds": 3.1451490002218634,
+      "iterations": 14,
+      "message_lower_bound": 0.4452042921997524,
+      "roots_excludable_by_message": 315,
+      "roots_excluded_by_message": 315,
+      "jt_certificate_updates": 152,
+      "message_seconds": 0.1274769005831331,
+      "capacity_message_lower_bound": 0.13372442662478856,
+      "capacity_message_seconds": 0.10367049905471504,
+      "column_admission_requested": 1835724,
+      "column_admission_admitted": 495441,
+      "column_admission_deferred": 1340283,
+      "capacity_throttled_batches": 44,
+      "pricing_seconds": 0.745241500204429,
+      "last_trace_seconds": 102.59134949999861,
+      "state_screened_candidates": 5191758,
+      "state_screen_seconds": 0.2350420996081084,
+      "capacity_bundle_states_selected": 16589,
+      "bundle_states_selected": 16589,
+      "selected_pricing_states": 19456,
+      "capacity_pricing_interleaves": 65,
+      "oracle_wall_seconds": 83.86260999995284,
+      "capacity_rebuilds": 3,
+      "capacity_evicted_columns": 300000,
+      "capacity_rebuild_seconds": 0.3369392997119576,
+      "last_compaction_iteration": 75,
+      "cache_evictions": 12125,
+      "exact_terminal_states": 65790,
+      "unresolved_terminal_states": 60838,
+      "final_columns": 195445
+    },
+    "certificate": {
+      "alpha_sum": 0.4452042921997524,
+      "pricing_lower_bounds": [
+        0.0,
+        -6.938893903907228e-18,
+        0.0,
+        -0.4427042921997524
+      ],
+      "computed_LB": 0.0025000000000000022,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": 0,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.4452042921997524
+    },
+    "manifest": {
+      "dataset": "diabetic",
+      "depth": 5,
+      "penalty": 0.01,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "diabetic",
+        "depth": 5,
+        "penalty": 0.01,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": true,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 101766,
+      "F": 315,
+      "classes": [
+        0,
+        1,
+        2
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:21:50+0800"
+    },
+    "independent_audit": {
+      "errors": 44289,
+      "splits": 1,
+      "realized_depth": 1,
+      "objective": 0.4452042921997524,
+      "independent_tree_audit": true
+    },
+    "run_file": "diabetic_D5_L0.01_r1.json"
+  },
+  {
+    "status": "OPT",
+    "LB": 0.01574336534145172,
+    "UB": 0.015743365341451935,
+    "call_wall_seconds": 186.76421349984594,
+    "process_wall_seconds": 187.5205352997873,
+    "proof_seconds": 186.31141679990105,
+    "tree": {
+      "feature": 21,
+      "left": {
+        "feature": 87,
+        "left": {
+          "feature": 97,
+          "left": {
+            "feature": 78,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 93,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 7,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 29,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 34,
+          "left": {
+            "feature": 61,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 90,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 76,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            },
+            "right": {
+              "feature": 63,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": 111,
+        "left": {
+          "feature": 103,
+          "left": {
+            "feature": 93,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 97,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 6,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "label": 0
+            }
+          }
+        },
+        "right": {
+          "feature": 93,
+          "left": {
+            "feature": 25,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 97,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 9,
+            "left": {
+              "feature": 1,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 96,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "objective": 0.015743365341451935,
+      "loss": 0.015743365341451935,
+      "misclassified": 12380,
+      "split_cost": 0.0,
+      "split_nodes": 26,
+      "leaves": 27,
+      "realized_depth": 5,
+      "features": [
+        1,
+        2,
+        6,
+        7,
+        9,
+        21,
+        25,
+        29,
+        34,
+        61,
+        63,
+        76,
+        78,
+        87,
+        90,
+        93,
+        96,
+        97,
+        103,
+        111
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": false,
+        "shallow_certificate": false,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 135,
+      "batch_messages": 30274,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217720,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 1.271677329681076e-05,
+      "setup_seconds": 0.6853099998552352,
+      "terminal_queries": 30289,
+      "d3_seconds": 152.6724189016976,
+      "d3_calls": 30281,
+      "warm_d3_calls": 261,
+      "d3_metadata_seconds": 47.205797097645785,
+      "d3_cost_and_h_reduction_seconds": 85.97645120322704,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 18.54618469974956,
+      "d3_backend_setup_seconds": 0.943985901074484,
+      "d3_kernel_calls": 30281,
+      "compact_d3_messages": 30281,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 3966811,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 3603503,
+      "native_root_pruned": 40516,
+      "native_transfer_exact": 110,
+      "d3_optimal_calls": 30281,
+      "cache_peak_entries": 1238,
+      "full_domain_bound_improvements": 369,
+      "warm_roots_completed": 1,
+      "warm_seconds": 1.6025568000040948,
+      "cache_hits": 195,
+      "parent_reference_states": 262,
+      "parent_bound_improvements": 9926,
+      "terminal_queries_without_oracle": 8,
+      "parent_reference_seconds": 2.2003001999109983,
+      "parent_reference_complete": 1,
+      "reference_D4_LB": 0.015771342242704704,
+      "reference_D4_UB": 0.015771342242704704,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 12.027996300021186,
+      "candidate_slots": 69700,
+      "terminal_contexts": 68120,
+      "unique_terminal_states": 31959,
+      "initial_exact_terminal_states": 1479,
+      "rmp_setup_seconds": 0.005328600062057376,
+      "rmp_update_seconds": 0.12953360052779317,
+      "peak_active_columns": 40595,
+      "rmp_seconds": 0.6094377995468676,
+      "iterations": 17,
+      "message_lower_bound": 0.01574336534145172,
+      "roots_excludable_by_message": 131,
+      "roots_excluded_by_message": 131,
+      "jt_certificate_updates": 121,
+      "message_seconds": 0.029522400349378586,
+      "column_admission_requested": 40591,
+      "column_admission_admitted": 40591,
+      "column_admission_deferred": 0,
+      "pricing_seconds": 0.09175770147703588,
+      "last_trace_seconds": 186.31141289998777,
+      "state_screened_candidates": 5754,
+      "state_screen_seconds": 0.04056219873018563,
+      "bundle_states_selected": 0,
+      "selected_pricing_states": 30020,
+      "oracle_wall_seconds": 163.1077935011126,
+      "cache_evictions": 29047,
+      "exact_terminal_states": 31499,
+      "unresolved_terminal_states": 460,
+      "final_columns": 40595
+    },
+    "certificate": {
+      "alpha_sum": 0.015743365341451723,
+      "pricing_lower_bounds": [
+        0.0,
+        -1.2716773296811423e-05,
+        -1.5260127956173014e-05,
+        0.0
+      ],
+      "computed_LB": 0.01571538844019874,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": -1.734723475976807e-18,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.01574336534145172
+    },
+    "manifest": {
+      "dataset": "transactions",
+      "depth": 5,
+      "penalty": 0.0,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "transactions",
+        "depth": 5,
+        "penalty": 0.0,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": false,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "c8e235de8f0a57e360b621a7824372dc34b1ffb141d56be5d3b20f9bfced4ba9",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 786363,
+      "F": 131,
+      "classes": [
+        0,
+        1
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:23:34+0800"
+    },
+    "independent_audit": {
+      "errors": 12380,
+      "splits": 26,
+      "realized_depth": 5,
+      "objective": 0.01574336534145172,
+      "independent_tree_audit": true
+    },
+    "run_file": "transactions_D5_L0_r1.json"
+  },
+  {
+    "status": "OPT",
+    "LB": 0.4168189768685022,
+    "UB": 0.41681897686851066,
+    "call_wall_seconds": 278.38578719994985,
+    "process_wall_seconds": 278.7678669998422,
+    "proof_seconds": 278.0930020001251,
+    "tree": {
+      "feature": 205,
+      "left": {
+        "feature": 37,
+        "left": {
+          "feature": 206,
+          "left": {
+            "feature": 42,
+            "left": {
+              "feature": 39,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 248,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          },
+          "right": {
+            "feature": 241,
+            "left": {
+              "feature": 59,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 201,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 63,
+          "left": {
+            "feature": 68,
+            "left": {
+              "feature": 77,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 104,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 31,
+            "left": {
+              "feature": 238,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 206,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": 203,
+        "left": {
+          "feature": 37,
+          "left": {
+            "feature": 239,
+            "left": {
+              "feature": 59,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 113,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 241,
+            "left": {
+              "feature": 95,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 204,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 104,
+          "left": {
+            "feature": 202,
+            "left": {
+              "feature": 28,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 150,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 124,
+            "left": {
+              "feature": 28,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 2
+              }
+            },
+            "right": {
+              "feature": 218,
+              "left": {
+                "label": 2
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "objective": 0.41681897686851066,
+      "loss": 0.41681897686851066,
+      "misclassified": 42418,
+      "split_cost": 0.0,
+      "split_nodes": 31,
+      "leaves": 32,
+      "realized_depth": 5,
+      "features": [
+        28,
+        31,
+        37,
+        39,
+        42,
+        59,
+        63,
+        68,
+        77,
+        95,
+        104,
+        113,
+        124,
+        150,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        218,
+        238,
+        239,
+        241,
+        248
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": true,
+        "shallow_certificate": false,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 259,
+      "batch_messages": 56413,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217728,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 2.947939390366134e-05,
+      "setup_seconds": 0.1363145001232624,
+      "terminal_queries": 56449,
+      "class_capacity_queries": 183290,
+      "class_capacity_improvements": 0,
+      "class_capacity_bound_gain": 0.0,
+      "d3_seconds": 243.2137166040484,
+      "d3_calls": 56420,
+      "warm_d3_calls": 608,
+      "d3_metadata_seconds": 35.89761790330522,
+      "d3_cost_and_h_reduction_seconds": 197.12900279741734,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 9.899287101114169,
+      "d3_backend_setup_seconds": 0.28780880221165717,
+      "d3_kernel_calls": 56420,
+      "compact_d3_messages": 56420,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 17772300,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 13254634,
+      "native_root_pruned": 362482,
+      "native_transfer_exact": 232,
+      "d3_optimal_calls": 56420,
+      "cache_peak_entries": 7824,
+      "full_domain_bound_improvements": 55545,
+      "warm_roots_completed": 1,
+      "warm_seconds": 0.4437671001069248,
+      "cache_hits": 417,
+      "parent_reference_states": 630,
+      "parent_bound_improvements": 134323,
+      "terminal_queries_without_oracle": 29,
+      "parent_reference_seconds": 3.4053925999905914,
+      "parent_reference_complete": 1,
+      "reference_D4_LB": 0.4211917536308787,
+      "reference_D4_UB": 0.4211917536308787,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 10.32818889990449,
+      "candidate_slots": 400692,
+      "terminal_contexts": 395640,
+      "unique_terminal_states": 126628,
+      "initial_exact_terminal_states": 3368,
+      "rmp_setup_seconds": 0.00606140005402267,
+      "rmp_update_seconds": 2.3787868001963943,
+      "peak_active_columns": 200000,
+      "rmp_seconds": 7.276066100457683,
+      "iterations": 29,
+      "message_lower_bound": 0.4168189768685022,
+      "roots_excludable_by_message": 315,
+      "roots_excluded_by_message": 315,
+      "jt_certificate_updates": 401,
+      "message_seconds": 0.3836046983487904,
+      "column_admission_requested": 291829,
+      "column_admission_admitted": 286602,
+      "column_admission_deferred": 5227,
+      "pricing_seconds": 1.6736997002735734,
+      "last_trace_seconds": 278.0929986999836,
+      "state_screened_candidates": 8280242,
+      "state_screen_seconds": 0.7763034987729043,
+      "bundle_states_selected": 45060,
+      "selected_pricing_states": 55812,
+      "oracle_wall_seconds": 245.45747070154175,
+      "cache_evictions": 48789,
+      "capacity_message_lower_bound": 0.4167305386837913,
+      "capacity_message_seconds": 0.31790320039726794,
+      "capacity_bundle_states_selected": 45060,
+      "capacity_pricing_interleaves": 177,
+      "capacity_throttled_batches": 8,
+      "capacity_rebuilds": 1,
+      "capacity_evicted_columns": 100000,
+      "capacity_rebuild_seconds": 0.10938429995439947,
+      "last_compaction_iteration": 213,
+      "exact_terminal_states": 59180,
+      "unresolved_terminal_states": 67448,
+      "final_columns": 186606
+    },
+    "certificate": {
+      "alpha_sum": 0.4168189768685022,
+      "pricing_lower_bounds": [
+        -0.1900929583564429,
+        -0.4159051156574887,
+        -0.4163964388902164,
+        -0.2518424621189788
+      ],
+      "computed_LB": -0.8574179981546246,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": 0,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.4168189768685022
+    },
+    "manifest": {
+      "dataset": "diabetic",
+      "depth": 5,
+      "penalty": 0.0,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "diabetic",
+        "depth": 5,
+        "penalty": 0.0,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": false,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 101766,
+      "F": 315,
+      "classes": [
+        0,
+        1,
+        2
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:26:42+0800"
+    },
+    "independent_audit": {
+      "errors": 42418,
+      "splits": 31,
+      "realized_depth": 5,
+      "objective": 0.4168189768685023,
+      "independent_tree_audit": true
+    },
+    "run_file": "diabetic_D5_L0_r2.json"
+  },
+  {
+    "status": "OPT",
+    "LB": 0.4452042921997524,
+    "UB": 0.4452042921997612,
+    "call_wall_seconds": 102.37684109993279,
+    "process_wall_seconds": 102.75221970002167,
+    "proof_seconds": 102.1194225999061,
+    "tree": {
+      "feature": 206,
+      "left": {
+        "label": 1
+      },
+      "right": {
+        "label": 2
+      }
+    },
+    "metrics": {
+      "objective": 0.4452042921997612,
+      "loss": 0.4352042921997612,
+      "misclassified": 44289,
+      "split_cost": 0.01,
+      "split_nodes": 1,
+      "leaves": 2,
+      "realized_depth": 1,
+      "features": [
+        206
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": true,
+        "shallow_certificate": true,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 93,
+      "batch_messages": 19709,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217640,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 2.947939390366134e-05,
+      "setup_seconds": 0.1319816999603063,
+      "terminal_queries": 19729,
+      "class_capacity_queries": 146757,
+      "class_capacity_improvements": 12899,
+      "class_capacity_bound_gain": 73.83742743434354,
+      "d3_seconds": 83.6201716994401,
+      "d3_calls": 19712,
+      "warm_d3_calls": 256,
+      "d3_metadata_seconds": 13.959654588717967,
+      "d3_cost_and_h_reduction_seconds": 68.52501521119848,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 0.8576362009625882,
+      "d3_backend_setup_seconds": 0.27786569856107235,
+      "d3_kernel_calls": 19712,
+      "compact_d3_messages": 19712,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 6209280,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 5368127,
+      "native_root_pruned": 283863,
+      "native_transfer_exact": 462,
+      "d3_optimal_calls": 19712,
+      "cache_peak_entries": 7587,
+      "full_domain_bound_improvements": 49702,
+      "warm_roots_completed": 1,
+      "warm_seconds": 0.31481050001457334,
+      "cache_hits": 230,
+      "parent_reference_states": 270,
+      "parent_bound_improvements": 76477,
+      "terminal_queries_without_oracle": 17,
+      "parent_reference_seconds": 1.5289965998381376,
+      "parent_reference_complete": 0,
+      "reference_D4_LB": 0.4452042921997523,
+      "reference_D4_UB": 0.4452042921997523,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 9.808418200118467,
+      "candidate_slots": 400692,
+      "terminal_contexts": 395640,
+      "unique_terminal_states": 126628,
+      "initial_exact_terminal_states": 46334,
+      "rmp_setup_seconds": 0.006248099962249398,
+      "rmp_update_seconds": 1.3387502995319664,
+      "peak_active_columns": 200000,
+      "rmp_seconds": 3.1457391993608326,
+      "iterations": 14,
+      "message_lower_bound": 0.4452042921997524,
+      "roots_excludable_by_message": 315,
+      "roots_excluded_by_message": 315,
+      "jt_certificate_updates": 152,
+      "message_seconds": 0.12413489865139127,
+      "capacity_message_lower_bound": 0.13372442662478856,
+      "capacity_message_seconds": 0.10091820126399398,
+      "column_admission_requested": 1835724,
+      "column_admission_admitted": 495441,
+      "column_admission_deferred": 1340283,
+      "capacity_throttled_batches": 44,
+      "pricing_seconds": 0.7311824993230402,
+      "last_trace_seconds": 102.11763569992036,
+      "state_screened_candidates": 5191758,
+      "state_screen_seconds": 0.23314830078743398,
+      "capacity_bundle_states_selected": 16589,
+      "bundle_states_selected": 16589,
+      "selected_pricing_states": 19456,
+      "capacity_pricing_interleaves": 65,
+      "oracle_wall_seconds": 83.45099600055255,
+      "capacity_rebuilds": 3,
+      "capacity_evicted_columns": 300000,
+      "capacity_rebuild_seconds": 0.3363801003433764,
+      "last_compaction_iteration": 75,
+      "cache_evictions": 12125,
+      "exact_terminal_states": 65790,
+      "unresolved_terminal_states": 60838,
+      "final_columns": 195445
+    },
+    "certificate": {
+      "alpha_sum": 0.4452042921997524,
+      "pricing_lower_bounds": [
+        0.0,
+        -6.938893903907228e-18,
+        0.0,
+        -0.4427042921997524
+      ],
+      "computed_LB": 0.0025000000000000022,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": 0,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.4452042921997524
+    },
+    "manifest": {
+      "dataset": "diabetic",
+      "depth": 5,
+      "penalty": 0.01,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "diabetic",
+        "depth": 5,
+        "penalty": 0.01,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": true,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 101766,
+      "F": 315,
+      "classes": [
+        0,
+        1,
+        2
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:31:20+0800"
+    },
+    "independent_audit": {
+      "errors": 44289,
+      "splits": 1,
+      "realized_depth": 1,
+      "objective": 0.4452042921997524,
+      "independent_tree_audit": true
+    },
+    "run_file": "diabetic_D5_L0.01_r2.json"
+  },
+  {
+    "status": "OPT",
+    "LB": 0.01574336534145172,
+    "UB": 0.015743365341451935,
+    "call_wall_seconds": 186.16688069980592,
+    "process_wall_seconds": 186.90227459999733,
+    "proof_seconds": 185.72123160003684,
+    "tree": {
+      "feature": 21,
+      "left": {
+        "feature": 87,
+        "left": {
+          "feature": 97,
+          "left": {
+            "feature": 78,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 93,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 7,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 29,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          }
+        },
+        "right": {
+          "feature": 34,
+          "left": {
+            "feature": 61,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 90,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 76,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            },
+            "right": {
+              "feature": 63,
+              "left": {
+                "label": 1
+              },
+              "right": {
+                "label": 0
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": 111,
+        "left": {
+          "feature": 103,
+          "left": {
+            "feature": 93,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 97,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 2,
+            "left": {
+              "feature": 6,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "label": 0
+            }
+          }
+        },
+        "right": {
+          "feature": 93,
+          "left": {
+            "feature": 25,
+            "left": {
+              "label": 0
+            },
+            "right": {
+              "feature": 97,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          },
+          "right": {
+            "feature": 9,
+            "left": {
+              "feature": 1,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            },
+            "right": {
+              "feature": 96,
+              "left": {
+                "label": 0
+              },
+              "right": {
+                "label": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "objective": 0.015743365341451935,
+      "loss": 0.015743365341451935,
+      "misclassified": 12380,
+      "split_cost": 0.0,
+      "split_nodes": 26,
+      "leaves": 27,
+      "realized_depth": 5,
+      "features": [
+        1,
+        2,
+        6,
+        7,
+        9,
+        21,
+        25,
+        29,
+        34,
+        61,
+        63,
+        76,
+        78,
+        87,
+        90,
+        93,
+        96,
+        97,
+        103,
+        111
+      ]
+    },
+    "stats": {
+      "backend": "gpu",
+      "options": {
+        "cache": true,
+        "warm_d3": true,
+        "quotient": true,
+        "lookahead": false,
+        "oracle_batch": 256,
+        "resident_gpu": true,
+        "columns_per_block": 0,
+        "threads": 8,
+        "max_columns": 200000,
+        "exact_columns_only": true,
+        "warm_roots": 1,
+        "bundle_pricing": false,
+        "message_bound": true,
+        "native_metadata": true,
+        "metadata_cache_entries": 4096,
+        "gpu_sync_tiles": 8,
+        "gpu_pipeline_chunk": 0,
+        "rmp_every_batches": 8,
+        "rmp_column_cap": 0,
+        "dual_smoothing": 0.0,
+        "root_order": "gain",
+        "cost_kernel": "shared",
+        "bundle_fraction": 1.0,
+        "class_bound": false,
+        "shallow_certificate": false,
+        "adaptive_admission": true,
+        "tail_depth": 3,
+        "suppress_jt_certificate": false,
+        "cost_mode": "lazy",
+        "master_mode": "cg",
+        "memory_limit_bytes": 51539607552,
+        "bound_feedback": false,
+        "cutoff_node_budget": 1,
+        "gpu_compact_rows": true,
+        "gpu_compact_min_batch": 8,
+        "gpu_compact_max_ratio": 0.75,
+        "gpu_pair_tile": 4096,
+        "gpu_bucket_min": 8,
+        "gpu_fused_join": true,
+        "state_screen": true,
+        "similarity_refs": 0,
+        "similarity_global": false,
+        "native_d3": true,
+        "native_parent_bounds": true,
+        "parent_bound_seconds": 60.0
+      },
+      "automatic_backend": true,
+      "state_screen_active": true,
+      "batch_calls": 135,
+      "batch_messages": 30274,
+      "batch_deduplicated": 0,
+      "cache_peak_bytes": 134217720,
+      "lookahead_queries": 0,
+      "lookahead_improvements": 0,
+      "lookahead_exact": 0,
+      "sparse_d3_messages": 0,
+      "lookahead_identity_skips": 0,
+      "conflict_lower_bound": 1.271677329681076e-05,
+      "setup_seconds": 0.6809458001516759,
+      "terminal_queries": 30289,
+      "d3_seconds": 152.09171810024384,
+      "d3_calls": 30281,
+      "warm_d3_calls": 261,
+      "d3_metadata_seconds": 46.932408354012296,
+      "d3_cost_and_h_reduction_seconds": 85.84879494411825,
+      "d3_pack_seconds": 0.0,
+      "d3_join_seconds": 0.0,
+      "d3_recovery_seconds": 18.369489801349232,
+      "d3_backend_setup_seconds": 0.941025000764057,
+      "d3_kernel_calls": 30281,
+      "compact_d3_messages": 30281,
+      "fused_join_messages": 0,
+      "d3_metadata_cache_hits": 0,
+      "d3_metadata_sibling_reuse": 0,
+      "d3_metadata_native_calls": 0,
+      "d3_gpu_sync_calls": 0,
+      "d3_pipeline_prefetch_batches": 0,
+      "d3_pipeline_overlap_seconds": 0,
+      "d3_input_features": 3966811,
+      "d3_effective_features": 0,
+      "d3_equivalent_features_removed": 0,
+      "d3_screened_exact_terminations": 0,
+      "native_root_candidates": 3603503,
+      "native_root_pruned": 40516,
+      "native_transfer_exact": 110,
+      "d3_optimal_calls": 30281,
+      "cache_peak_entries": 1238,
+      "full_domain_bound_improvements": 369,
+      "warm_roots_completed": 1,
+      "warm_seconds": 1.6286720000207424,
+      "cache_hits": 195,
+      "parent_reference_states": 262,
+      "parent_bound_improvements": 9926,
+      "terminal_queries_without_oracle": 8,
+      "parent_reference_seconds": 2.2378992999438196,
+      "parent_reference_complete": 1,
+      "reference_D4_LB": 0.015771342242704704,
+      "reference_D4_UB": 0.015771342242704704,
+      "terminal_depth": 3,
+      "upper_depth": 2,
+      "metadata_seconds": 12.064458000008017,
+      "candidate_slots": 69700,
+      "terminal_contexts": 68120,
+      "unique_terminal_states": 31959,
+      "initial_exact_terminal_states": 1479,
+      "rmp_setup_seconds": 0.005680799949914217,
+      "rmp_update_seconds": 0.13180539850145578,
+      "peak_active_columns": 40595,
+      "rmp_seconds": 0.6037139003165066,
+      "iterations": 17,
+      "message_lower_bound": 0.01574336534145172,
+      "roots_excludable_by_message": 131,
+      "roots_excluded_by_message": 131,
+      "jt_certificate_updates": 121,
+      "message_seconds": 0.02886630012653768,
+      "column_admission_requested": 40591,
+      "column_admission_admitted": 40591,
+      "column_admission_deferred": 0,
+      "pricing_seconds": 0.08986039878800511,
+      "last_trace_seconds": 185.72122980002314,
+      "state_screened_candidates": 5754,
+      "state_screen_seconds": 0.04084029910154641,
+      "bundle_states_selected": 0,
+      "selected_pricing_states": 30020,
+      "oracle_wall_seconds": 162.47554930089973,
+      "cache_evictions": 29047,
+      "exact_terminal_states": 31499,
+      "unresolved_terminal_states": 460,
+      "final_columns": 40595
+    },
+    "certificate": {
+      "alpha_sum": 0.015743365341451723,
+      "pricing_lower_bounds": [
+        0.0,
+        -1.2716773296811423e-05,
+        -1.5260127956173014e-05,
+        0.0
+      ],
+      "computed_LB": 0.01571538844019874,
+      "jt_bound_used": true,
+      "max_equality_residual": 0,
+      "minimum_active_reduced_cost": -1.734723475976807e-18,
+      "pricing_scope": "lower bounds for every exact or unresolved private D3 configuration",
+      "upper_message_LB": 0.01574336534145172
+    },
+    "manifest": {
+      "dataset": "transactions",
+      "depth": 5,
+      "penalty": 0.0,
+      "seconds": 600.0,
+      "baseline_configuration": {
+        "dataset": "transactions",
+        "depth": 5,
+        "penalty": 0.0,
+        "options": {
+          "cache": true,
+          "warm_d3": true,
+          "quotient": true,
+          "lookahead": false,
+          "oracle_batch": 64,
+          "resident_gpu": true,
+          "columns_per_block": 0,
+          "threads": 8,
+          "max_columns": 200000,
+          "exact_columns_only": true,
+          "warm_roots": 1,
+          "bundle_pricing": false,
+          "message_bound": true,
+          "native_metadata": true,
+          "metadata_cache_entries": 4096,
+          "gpu_sync_tiles": 8,
+          "gpu_pipeline_chunk": 0,
+          "rmp_every_batches": 4,
+          "rmp_column_cap": 0,
+          "dual_smoothing": 0.0,
+          "root_order": "gain",
+          "cost_kernel": "shared",
+          "bundle_fraction": 1.0,
+          "class_bound": false,
+          "shallow_certificate": false,
+          "adaptive_admission": true,
+          "tail_depth": 3,
+          "suppress_jt_certificate": false,
+          "cost_mode": "lazy",
+          "master_mode": "cg",
+          "memory_limit_bytes": 51539607552,
+          "bound_feedback": false,
+          "cutoff_node_budget": 1,
+          "gpu_compact_rows": true,
+          "gpu_compact_min_batch": 8,
+          "gpu_compact_max_ratio": 0.75,
+          "gpu_pair_tile": 4096,
+          "gpu_bucket_min": 8,
+          "gpu_fused_join": true,
+          "state_screen": true,
+          "similarity_refs": 0
+        }
+      },
+      "overrides": {
+        "native_d3": true,
+        "threads": 8
+      },
+      "data_sha256": "c8e235de8f0a57e360b621a7824372dc34b1ffb141d56be5d3b20f9bfced4ba9",
+      "git_head": "a8d5d6ed7acafa149b208ef6e4954a47a4352c7b",
+      "source_hashes": {
+        "jt_oct\\accuracy_oracle.py": "e40635eda42d70230fb29827c98d223249a1bbea2c912326925f58a05cfe53df",
+        "jt_oct\\auto_dp.py": "c7b2b73bfeba346e698562abd4dbcadb674f42e746784eb3e8fda7ee6ce40c4e",
+        "jt_oct\\cg.py": "a446cea4666034dbc9fd753aeb0670bfa0b2fd8b9392a9ea8540941d805c95fa",
+        "jt_oct\\conflicts.py": "4f01ee4dedbb6874f510fc5e36e4fedf30a793498ff9e4b5960baf49df18c46b",
+        "jt_oct\\contract_cg.py": "37c65355caa84cb0cbada61bc971966be2125c9a2078c4f0863d4bc7e9103c4f",
+        "jt_oct\\contract_ee.py": "7e6796c0f2f37f8b4e6d15a2e386fe3123b95291471f53e5cc5a04853c620e2a",
+        "jt_oct\\contract_ee_native.py": "73e169591081cd6055934b8ae73ed6c3f8fa36f4f6949d6c2e65e3ac9f240759",
+        "jt_oct\\d2_cg.py": "46931cd0f6517d3662c97dd31624300888e16c2465c5978412f100d8fcafd50c",
+        "jt_oct\\d2_cg_gpu.py": "9b87c48e384c6420c82e1505f97a261d160e88655e413e5f04eb74f0a3563313",
+        "jt_oct\\d3_batched.py": "830680433104dd902dfc1ed5cd1b74650f16ce3c89247bdcf4df1b0965d21a65",
+        "jt_oct\\d3_cg_gpu.py": "0bd936b9e579a0cf38b3e87165190629bf004fa36b994a05f51c913c013ce82d",
+        "jt_oct\\d3_grow.py": "9287e66640424b57897264e567709ae3d677ad9200fded13b9994a56c27b3046",
+        "jt_oct\\d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+        "jt_oct\\d3_pricing.py": "39d69c17aa51ebc8dfdfe98ee447333507f92c9962502ef16c310b1712959f0a",
+        "jt_oct\\d3_table3.py": "636cb68919c136b5ed1ac936ac7e8b2492b0e417aa85fcb86f7795bfba08c235",
+        "jt_oct\\deep_campaign.py": "1feb12d272453be378a052e8f54dc7db2341da4aec63fee30a1cfcf1a7aa3cf7",
+        "jt_oct\\deep_contract_ee.py": "4296cfd11433c4e6c080e5ceaa12efcfb0e4f5e7cddb22a6883ea9a8bd0de6a7",
+        "jt_oct\\deep_structural_native.py": "123954f603ae1015a243b54f3e69a39fe26a56ed115287a77cb17f8a6e2052a8",
+        "jt_oct\\direct_message.py": "8c7f780a4463b259eff4bfdd9df2f6c9c1887af0b7e5f9bfb2b541081e752fcc",
+        "jt_oct\\domain.py": "870d9ac88ed2f8649cf58e744f5dd40cefe9a244011e5ad49d27b769f19467f5",
+        "jt_oct\\gurobi_backend.py": "6841171de12ec16dc07c02d053499c1305a5edb878331dd3f04b54f46f1e5d5b",
+        "jt_oct\\interval_oracle.py": "70638077fea9b4ef4ff1d690bc2555e0d15afb78ef7de2babaa6277b55994963",
+        "jt_oct\\master.py": "17f8d085414378dfd14ee5ee1cd845e888b012ef8b4f92894112c1f733657a08",
+        "jt_oct\\message_plus.py": "1a93500d05ae4fbe26388ab78e39aabb28ba6a901cae6ab0e6d96e295018ba0e",
+        "jt_oct\\problem.py": "84a4211c03bdd29fd337cfa4931206beffddd23acbbecf37d6ab3a733b1e290a",
+        "jt_oct\\resident_dp.py": "29bef7423d75e3939b0fd0fb681ada33458e27c8c5f4bab84aeb674d945aae7e",
+        "jt_oct\\resident_table3.py": "94b692aad3058b16cde11616f9d8f311b201c395c345de7843d88035462a4ef1",
+        "jt_oct\\revision_native.py": "fd4062cbc3e89f65726d2bd5e6a9a5c0ac8aa15fcb2a4a2c7810fbb631aa880e",
+        "jt_oct\\solvers.py": "68452ba743bcfb61162825fd035bc283ac24222b9512e283c242eaf0d4e0dfdd",
+        "jt_oct\\solver_common.py": "442577cba197c8ebcd208fa587fc669d174112cc3b6f827594e754e313c0629e",
+        "jt_oct\\sparse_tail_rmp.py": "db95dcb9c2b9aa1fae846497f5df4036ce6419b26088eea50361bc371f60f713",
+        "jt_oct\\tail_cg.py": "c23aa07b06aee4afe4e1d8c2bde01072aaa62676cd8cb474c42acb09c29faa80",
+        "jt_oct\\terminal_message.py": "681f18c52a930b27ced1455702e33cb52e3d499a7428dc979fa2cd924edbbf84",
+        "jt_oct\\__init__.py": "767acf9ddfa35315cc39bd30777dfb147f6bd8db9a0478074e8f938f6de32b28",
+        "native\\accuracy_multiclass.cpp": "ff4a6848343c67b159d5acd350fdfc7c6ba2290ca47bb23f82dbdf7feab51679",
+        "native\\accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+        "native\\contract_ee_rmp.cpp": "403f8826aea3b6a426b27b4f58c2fa7b61deccc758effc1d5b90d59eb6b03c28",
+        "native\\contract_rmp.cpp": "7e582a7a4640d04b971316604c6afa01e422d21dec4799d7dad7186a604a9fb0",
+        "native\\d2_cg.cpp": "f8fa1b4829954483bd21cc0e0c5e0bf8c70a2d2205745e4207156e25c300710c",
+        "native\\d3_kappa.cpp": "6b413af6d595ff909e55a33e73dca6907e084d8e4f19941cfe131d4fea79cfaf",
+        "native\\d3_optimized.cpp": "c57e46c2a2375be498c6a753260288f549a8522ee8028900bbed79f38793c1e6",
+        "native\\d3_prepare.cpp": "1687f314047b017a04f440493c84d6c4980594afbed3272cd8e85985b4cac3f7",
+        "native\\d3_structural.cpp": "094a49f412a5e2bf285457a8a587c95c475dac2921c12bbdb487fc3d370c9712",
+        "native\\deep_structural_core.cpp": "f70a82e8058d3a179eb3511572f36d1c7a3582ba23206d65510e3c5bf2c285be",
+        "native\\interval_oracle.cpp": "f2f2035a098eb59792c86608025ac9b672fa7280263509917896a85256653fe4",
+        "native\\jt_message.cpp": "e85802853adbfb8441f96e69c69f6e551d4510ed3ca649b1cdf193cc107c165e",
+        "native\\jt_message_plus.cpp": "f550d9f1fe24a7467a70825c975c2f3a1fe4d67859c6756ea3a91ef177a916e2",
+        "native\\revision_experiments.cpp": "56c1c61b6d74f575f5db0544ceeddc550d87d14fe494ddcd9da2d20a3e151925",
+        "native\\sparse_tail_rmp.cpp": "ca96cdeb621dfe8d1873ca092383b33f340147a870453dbf44b98b5cd3bd1be0",
+        "native\\accuracy_histogram_kernels.hpp": "a14484924692f10c6228e79d6cf0f2869627ea790174e45737ebef9e6bfa6331",
+        "native\\accuracy_multiclass.hpp": "7336b297a250d6152d8459e1df6e08aef4a77482775737827ee0dd7ce5f0d7c4",
+        "native\\deep_experiment.hpp": "773322a64545f5ebcbd4364c2caad15007a9f289dc558666db21c1322de48fa0",
+        "native\\revision_coordination.hpp": "e7ecb0003529fcab8c7135003656882557bfeda38213e989e8331e45a0edec70",
+        "native\\revision_eager.hpp": "e08b17627f4c42d777307a364b76020d426f2a177da4cf4a0429781428cfc599",
+        "native\\revision_ondemand.hpp": "d943da02895d2535db556786c5e875ca1c0edc98d3aa428dede6d245cff01575",
+        "native\\general_jt\\cm5_common.hpp": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+        "native\\general_jt\\cm_mcc_gpu.hpp": "0f84592eba02ee3deb9c667738362bc7c5dc16d1d2fbb2ac3190d2b25f451b4d",
+        "native\\general_jt\\cm_shallow_linear.hpp": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+        "native\\general_jt\\cm_weighted_support.hpp": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+        "jt_oct\\_native\\accuracy_multiclass.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_binary_trial.dll": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+        "jt_oct\\_native\\accuracy_multiclass_next.dll": "b6819ff676785bfd971946715c2e1dbd126934402377a1ff0bcf8ebec0f9a026",
+        "jt_oct\\_native\\accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004",
+        "jt_oct\\_native\\contract_ee_rmp.dll": "43cca4176816b55d534cc21aecd5aadf9b6790133be7930ba1db14e3804e7348",
+        "jt_oct\\_native\\contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+        "jt_oct\\_native\\d2_cg.dll": "9fad66cac481c7594d926ccfd877e2688180fa209938c0b35b69fc2b82a23067",
+        "jt_oct\\_native\\d3_kappa.dll": "0417dcdeb552f493e7225f48a2646f362e0944f6812c5c3c26af01db225d37e0",
+        "jt_oct\\_native\\d3_optimized.dll": "db33f8b88ff67723873b40e0b31c13140505db9627ab15cd99c830a6e5a694f1",
+        "jt_oct\\_native\\d3_prepare.dll": "9a28eb4a7e223282da812ec3a53b696d049cc023a8879c10ebbbce67c919fa5c",
+        "jt_oct\\_native\\d3_structural.dll": "a7b94b9bb386a644257bd3b68173f1053d1b50ab294593cb12f1cecf5b97aea3",
+        "jt_oct\\_native\\deep_structural_core.dll": "faa9306e3c48a8bd47cf5b7937e3bd0800b2276944e64195a59bad892efb89e6",
+        "jt_oct\\_native\\interval_oracle.dll": "b491a7d7a7047f1a64c62feab88238a58739ad169b82ded14773021f26479fd8",
+        "jt_oct\\_native\\jt_message.dll": "e35362af2164d04ef3d4deed77446d6ca902413a8cce65723af9b77a4f5cf2eb",
+        "jt_oct\\_native\\jt_message_plus.dll": "0eab4eddeec407b1324bffbd854295a3e66e7f49d2049d1ae36a51800c79919c",
+        "jt_oct\\_native\\revision_experiments.dll": "8ab96328250c47096e8f1b628234eeecf950506bf7ae6ffb4a2d591e0ab25e2e",
+        "jt_oct\\_native\\sparse_tail_rmp.dll": "8b45f007a6856102beeae1257788cdc6c4830a827ff1dace99f3d1594a467c6e"
+      },
+      "n": 786363,
+      "F": 131,
+      "classes": [
+        0,
+        1
+      ],
+      "environment": {
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "started_local": "2026-09-30T21:33:03+0800"
+    },
+    "independent_audit": {
+      "errors": 12380,
+      "splits": 26,
+      "realized_depth": 5,
+      "objective": 0.01574336534145172,
+      "independent_tree_audit": true
+    },
+    "run_file": "transactions_D5_L0_r2.json"
+  }
+]

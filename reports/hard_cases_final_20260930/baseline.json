@@ -1,0 +1,131 @@
+[
+  {
+    "dataset": "diabetic",
+    "depth": 5,
+    "penalty": 0.0,
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\diabetic_D5_L0.0\\result.json",
+    "status": "TIME",
+    "seconds": 609.7617321000143,
+    "LB": 2.947939390366134e-05,
+    "UB": 0.4183715582807701,
+    "gap": 0.9999295377677564,
+    "method": "JT-CG-D3Tail-GPU",
+    "metrics": {
+      "objective": 0.4183715582807701,
+      "loss": 0.4183715582807701,
+      "misclassified": 42576,
+      "split_cost": 0.0,
+      "split_nodes": 31,
+      "leaves": 32,
+      "realized_depth": 5,
+      "features": [
+        16,
+        28,
+        37,
+        39,
+        41,
+        50,
+        59,
+        63,
+        77,
+        95,
+        104,
+        177,
+        178,
+        194,
+        202,
+        203,
+        204,
+        205,
+        206,
+        241,
+        245
+      ]
+    },
+    "call_wall_seconds": 610.0255384000193,
+    "data_verification": {
+      "exact_matrix_and_labels_match": true,
+      "historical_cache_sha256": "0b994010cf451d1e72063ff94a5478b1a2388b1e9ec8e80e782e6af93065727c",
+      "release_npz_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56"
+    }
+  },
+  {
+    "dataset": "diabetic",
+    "depth": 5,
+    "penalty": 0.01,
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\diabetic_D5_L0.01\\result.json",
+    "status": "TIME",
+    "seconds": 606.167249399994,
+    "LB": 0.040068785252441876,
+    "UB": 0.4452042921997612,
+    "gap": 0.9099991038845079,
+    "method": "JT-CG-D3Tail-GPU",
+    "metrics": {
+      "objective": 0.4452042921997612,
+      "loss": 0.4352042921997612,
+      "misclassified": 44289,
+      "split_cost": 0.01,
+      "split_nodes": 1,
+      "leaves": 2,
+      "realized_depth": 1,
+      "features": [
+        206
+      ]
+    },
+    "call_wall_seconds": 606.4352115999791,
+    "data_verification": {
+      "exact_matrix_and_labels_match": true,
+      "historical_cache_sha256": "0b994010cf451d1e72063ff94a5478b1a2388b1e9ec8e80e782e6af93065727c",
+      "release_npz_sha256": "1bde1047b25bf8f950eb4aa67531cc273b4ff573ae5aab0bb4e90a4dbe19ae56"
+    }
+  },
+  {
+    "dataset": "transactions",
+    "depth": 5,
+    "penalty": 0.0,
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\transactions_D5_L0.0\\result.json",
+    "status": "TIME",
+    "seconds": 600.8626834999886,
+    "LB": 1.271677329681076e-05,
+    "UB": 0.015756082114748743,
+    "gap": 0.9991928974979822,
+    "method": "JT-CG-D3Tail-GPU",
+    "metrics": {
+      "objective": 0.015756082114748743,
+      "loss": 0.015756082114748743,
+      "misclassified": 12390,
+      "split_cost": 0.0,
+      "split_nodes": 26,
+      "leaves": 27,
+      "realized_depth": 5,
+      "features": [
+        4,
+        7,
+        20,
+        23,
+        30,
+        35,
+        40,
+        60,
+        69,
+        78,
+        87,
+        89,
+        90,
+        92,
+        93,
+        97,
+        102,
+        111,
+        120,
+        122
+      ]
+    },
+    "call_wall_seconds": 601.470595300023,
+    "data_verification": {
+      "exact_matrix_and_labels_match": true,
+      "historical_cache_sha256": "4e05c6d10e1c97a217386774c27d80d68e6ca2061f32d9ab98c92776941a6396",
+      "release_npz_sha256": "c8e235de8f0a57e360b621a7824372dc34b1ffb141d56be5d3b20f9bfced4ba9"
+    }
+  }
+]

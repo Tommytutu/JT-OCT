@@ -1,0 +1,27 @@
+{
+  "python": "D:\\论文高\\General JT\\JT-CM\\.venv\\Scripts\\python.exe",
+  "python_version": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cpu": "Intel Core i9-14900KF",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, 595.95, 16376 MiB",
+  "threads": 8,
+  "time_limit": 600,
+  "repeats": 2,
+  "solver_commit": "a8d5d6e",
+  "f1_unchanged": true,
+  "f1_checks": {
+    "run_f1_cc.py": true,
+    "run_cm_cpp.py": true,
+    "jt_oct/_native/cm_cc_f1.dll": true,
+    "jt_oct/_native/cm_generic_d4.dll": true,
+    "jt_oct/_native/cm_generic_d5.dll": true,
+    "native\\cm5_common.hpp": true,
+    "native\\cm_mcc_gpu.hpp": true,
+    "native\\cm_shallow_linear.hpp": true,
+    "native\\cm_weighted_support.hpp": true
+  },
+  "original_binary_dll_unchanged": true,
+  "general_accuracy_dll_sha256": "8e348f412f51360a55943d1e35dc4db23892cac875dd7cf4fb84e21fe03f5ff4",
+  "correctness_tests": "11 passed; exhaustive and independent legacy CPU comparisons",
+  "timing": "Sequential fresh processes; solver call and launch-through-exit recorded separately; existing CUDA driver disk caches allowed"
+}

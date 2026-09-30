@@ -63,8 +63,10 @@ python run.py --method JT-MP --dataset banknote --depth 4 --penalty 0.01 --outpu
 The bundled command line uses the recorded configuration for the selected
 dataset, depth, penalty, and method.
 
-Binary D4/D5 JT-CG also has an optional native accuracy-pricing service:
+D4/D5 JT-CG also has an optional native accuracy-pricing service for 2--32 classes:
 add `--d3-oracle native`. See [build instructions and validation](README_NATIVE_ACCURACY.md).
+The three previously timed-out Table 3 D5 cases have a separate
+[validation report](reports/hard_cases_final_20260930/REPORT_ZH.md).
 
 For reproducible timings, the runner defaults `OMP_NUM_THREADS`,
 `MKL_NUM_THREADS`, and `OPENBLAS_NUM_THREADS` to `1` and preloads the depth-4/5
@@ -78,6 +80,8 @@ values are preserved, so these defaults can be overridden explicitly.
 | `--depth` | `2`, `3`, `4`, `5` | required | Maximum tree depth. |
 | `--penalty` | `0`, `0.01` | `0` | Penalty for each split node. |
 | `--seconds` | positive number | `600` | Solver time limit in seconds. |
+| `--d3-oracle` | `legacy`, `native` | `legacy` | Accuracy evaluator for JT-CG D4/D5. |
+| `--threads` | `1`--`64` | recorded configuration | Deep oracle CPU workers. |
 | `--output` | JSON path | required | Result file; an existing file is not overwritten. |
 
 Example with a shorter limit:

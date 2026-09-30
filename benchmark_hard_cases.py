@@ -46,7 +46,7 @@ def audit_tree(result, data_path):
     assert result['LB'] <= objective + 1e-9
     if result['status'] == 'OPT':
         assert objective - result['LB'] <= 1e-7
-    return dict(errors=errors, splits=splits, depth=depth, objective=objective,
+    return dict(errors=errors, splits=splits, realized_depth=depth, objective=objective,
                 independent_tree_audit=True)
 
 
@@ -55,11 +55,12 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--repeats', type=int, default=1)
     parser.add_argument('--seconds', type=float, default=600.)
+    parser.add_argument('--resume', action='store_true', help='Reuse completed audited outputs')
     args = parser.parse_args()
     if args.repeats < 1 or args.seconds <= 0:
         parser.error('positive repeats and seconds required')
     root = Path(__file__).resolve().parent
-    args.output.mkdir(parents=True, exist_ok=False)
+    args.output.mkdir(parents=True, exist_ok=args.resume)
     results = []
     for repeat in range(1, args.repeats + 1):
         for dataset, penalty in (('diabetic', 0.), ('diabetic', .01), ('transactions', 0.)):
@@ -68,11 +69,19 @@ def main():
                        '--dataset', dataset, '--penalty', str(penalty),
                        '--seconds', str(args.seconds), '--backend', 'auto',
                        '--options', '{"native_d3":true,"threads":8}', '--output', str(output)]
-            start = time.perf_counter()
-            print(f'START {output.name}', flush=True)
-            with output.with_suffix('.console.log').open('w', encoding='utf-8') as log:
-                subprocess.run(command, cwd=root, stdout=log, stderr=subprocess.STDOUT, check=True)
-            process_wall = time.perf_counter() - start
+            if not output.exists():
+                start = time.perf_counter()
+                print(f'START {output.name}', flush=True)
+                with output.with_suffix('.console.log').open('w', encoding='utf-8') as log:
+                    subprocess.run(command, cwd=root, stdout=log, stderr=subprocess.STDOUT, check=True)
+                process_wall = time.perf_counter() - start
+            else:
+                if not args.resume:
+                    raise FileExistsError(output)
+                previous = json.loads(output.read_text(encoding='utf-8'))
+                process_wall = previous['process_wall_seconds']
+                manifest = previous['manifest']
+                assert (manifest['dataset'], manifest['depth'], manifest['penalty'], manifest['seconds']) == (dataset, 5, penalty, args.seconds)
             result = json.loads(output.read_text(encoding='utf-8'))
             result['process_wall_seconds'] = process_wall
             result['independent_audit'] = audit_tree(result, root / 'datasets' / (dataset + '.npz'))
