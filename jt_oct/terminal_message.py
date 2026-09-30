@@ -82,6 +82,8 @@ class TerminalMessages:
         self.cache=OrderedDict()
         self.cache_sizes={};self.cache_bytes=0
         self.bound_cache=OrderedDict()
+        self.full_domain_lower=0.
+        self.parent_bounds={}
         for key in ('batch_calls','batch_messages','batch_deduplicated','cache_peak_bytes',
                     'lookahead_queries','lookahead_improvements','lookahead_exact','sparse_d3_messages',
                     'lookahead_identity_skips'):
@@ -114,7 +116,7 @@ class TerminalMessages:
         if self.audit:self.audit(node,used,rows,answer)
         return answer
 
-    def initial(self,rows,allow_cache=True,strengthen=False,terminal_depth=None):
+    def initial(self,rows,allow_cache=True,strengthen=False,terminal_depth=None,ancestors=()):
         if len(rows)<self.p.min_leaf:return Interval(math.inf,math.inf,None,True)
         if allow_cache and self.options.cache_entries and rows.mask in self.cache:
             self.cache.move_to_end(rows.mask);self.stats['cache_hits']+=1
@@ -129,6 +131,17 @@ class TerminalMessages:
         else:tree,error=self.workspace.leaf(rows)
         conflict=sum(value for bit,value in self.conflicts if bit&rows.mask)
         lower=min(error,self.p.penalty+conflict)
+        if self.workspace.options.native_accuracy and self.p.min_leaf==0 and self.full_domain_lower:
+            previous=lower
+            lower=max(lower,self.full_domain_lower-(self.p.n-len(rows))*self.p._uniform_weight-1e-12)
+            self.stats['full_domain_bound_improvements']=self.stats.get('full_domain_bound_improvements',0)+int(lower>previous+1e-12)
+        if self.parent_bounds:
+            previous=lower
+            for ancestor in ancestors:
+                if ancestor in self.parent_bounds:
+                    count,bound=self.parent_bounds[ancestor]
+                    lower=max(lower,bound-(count-len(rows))*self.p._uniform_weight-1e-12)
+            self.stats['parent_bound_improvements']=self.stats.get('parent_bound_improvements',0)+int(lower>previous+1e-12)
         if counts is not None:
             # b splits imply at most b+1 predicted labels, with b<=2**D-1.
             # Conflicts and missing labels overlap, hence max rather than sum.
@@ -186,7 +199,7 @@ class TerminalMessages:
 
     def terminal(self,rows,node,used,kind='terminal'):
         self.clock.check();self.stats['terminal_queries']+=1
-        initial=self.initial(rows,strengthen=True,terminal_depth=self.terminal_depth)
+        initial=self.initial(rows,strengthen=True,terminal_depth=self.terminal_depth,ancestors=zip(used,node))
         if initial.exact:
             self.stats['terminal_queries_without_oracle']+=1
             if self.audit:self.audit(node,used,rows,initial)
@@ -212,9 +225,12 @@ class TerminalMessages:
         for key in ('input_features','effective_features','equivalent_features_removed','screened_exact_terminations'):
             name=prefix+'_'+key
             self.stats[name]=self.stats.get(name,0)+out['stats'].get(key,0)
+        for key in ('native_root_candidates','native_root_pruned','native_transfer_exact'):
+            self.stats[key]=self.stats.get(key,0)+out['stats'].get(key,0)
         if out['status']=='OPT':
             self.stats[prefix+'_optimal_calls']+=1
             value=float(out['value']);answer=Interval(value,value,out['tree'],True)
+            if rows.mask==self.p.all_rows.mask:self.full_domain_lower=value
             if value<initial.lower-1e-9:raise AssertionError('Terminal lower bound exceeds its exact cost')
             if self.options.cache_entries:
                 # Ancestors are constant on their routed set. Uniform nonnegative
@@ -247,7 +263,7 @@ class TerminalMessages:
         answers=[None]*len(requests);pending=OrderedDict()
         for i,(rows,node,used) in enumerate(requests):
             self.clock.check();self.stats['terminal_queries']+=1
-            initial=self.initial(rows,strengthen=True,terminal_depth=self.terminal_depth)
+            initial=self.initial(rows,strengthen=True,terminal_depth=self.terminal_depth,ancestors=zip(used,node))
             if initial.exact:
                 answers[i]=initial;self.stats['terminal_queries_without_oracle']+=1
                 if self.audit:self.audit(node,used,rows,initial)

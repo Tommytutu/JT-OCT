@@ -55,7 +55,7 @@ struct MccGpu {
     U scalar_calls=0,scalar_completed=0,scalar_leaf_prunes=0,geometry_hits=0,scalar_pairs=0;size_t geometry_bytes=0,geometry_limit=32*1024*1024;
     static void check(CUresult r){if(r!=CUDA_SUCCESS){const char* s=nullptr;cuGetErrorString(r,&s);throw std::runtime_error(s?s:"CUDA driver error");}}
     template<class T>T proc(const char* name){auto p=GetProcAddress(rtc,name);if(!p)throw std::runtime_error("NVRTC symbol missing");return reinterpret_cast<T>(p);}
-    MccGpu(const Data& d,int nt,int mode,const wchar_t* path):data(d),threads(nt){
+    MccGpu(const Data& d,int nt,int mode,const wchar_t* path,bool external_streamed=false):data(d),threads(nt){
         if(!mode)return; double start=now();
         try {
             check(cuInit(0));CUdevice device;check(cuDeviceGet(&device,0));
@@ -210,7 +210,7 @@ extern "C" __global__ void cm_triples(const U* zero,const U* positive,const U* m
             check(cuMemAlloc(&zero,d.zero.size()*sizeof(U)));check(cuMemAlloc(&pos,d.pos.size()*sizeof(U)));check(cuMemAlloc(&rows,d.W*sizeof(U)));
             check(cuMemcpyHtoD(zero,d.zero.data(),d.zero.size()*sizeof(U)));check(cuMemcpyHtoD(pos,d.pos.data(),d.pos.size()*sizeof(U)));
             check(cuDeviceGetAttribute(&shared_limit,CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK,device));
-            if(size_t(d.W)*12+256*20+8>size_t(shared_limit))throw std::runtime_error("row mask exceeds GPU shared-memory capacity; use CPU mode");
+            if(!external_streamed&&size_t(d.W)*12+256*20+8>size_t(shared_limit))throw std::runtime_error("row mask exceeds GPU shared-memory capacity; use CPU mode");
             size_t items=size_t(d.F)*d.F*4;if(items>size_t(INT_MAX))throw std::runtime_error("too many GPU feature pairs");values.resize(items);tails.resize(items);hist.resize(2*items);
             check(cuMemAlloc(&costs,3*items*sizeof(double)));check(cuMemAlloc(&actions,3*items*sizeof(int)));check(cuMemAlloc(&histogram,2*items*sizeof(int)));check(cuMemAlloc(&feature_ids,d.F*sizeof(int)));check(cuMemAlloc(&extra_weights,4*sizeof(double)));
             check(cuMemAlloc(&scalar_zero,d.zero.size()*sizeof(U)));check(cuMemAlloc(&scalar_pos,d.pos.size()*sizeof(U)));check(cuMemAlloc(&scalar_dominated,2*d.F));

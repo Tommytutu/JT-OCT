@@ -1,4 +1,4 @@
-param([string]$CudaPackages = '')
+param([string]$CudaPackages = '', [ValidateSet('accuracy_oracle','accuracy_multiclass')][string]$Target = 'accuracy_oracle', [string]$OutputSuffix = '')
 $ErrorActionPreference = 'Stop'
 $OracleRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 if (-not $CudaPackages) { $CudaPackages = Join-Path $OracleRoot '.venv\Lib\site-packages\nvidia' }
@@ -8,5 +8,7 @@ $OracleInstall = & 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vsw
 if (-not $OracleInstall) { throw 'MSVC C++ tools were not found' }
 $OracleVcVars = Join-Path $OracleInstall 'VC\Auxiliary\Build\vcvars64.bat'
 $OracleCommand = '"' + $OracleVcVars + '" >nul && cl /nologo /O2 /MD /EHsc /std:c++17 /openmp /LD /I"' + $CudaPackages + '\cuda_runtime\include" /I"' + $CudaPackages + '\cuda_nvrtc\include" /Fo"' + $OracleOutput + '\accuracy_oracle.obj" "' + $OracleRoot + '\native\accuracy_oracle.cpp" /link /LIBPATH:"' + $CudaPackages + '\cuda_runtime\lib\x64" cuda.lib psapi.lib /OUT:"' + $OracleOutput + '\accuracy_oracle.dll" /IMPLIB:"' + $OracleOutput + '\accuracy_oracle.lib"'
+$OracleCommand = $OracleCommand.Replace('accuracy_oracle.', ($Target + '.'))
+if ($OutputSuffix) { $OracleCommand = $OracleCommand.Replace(($Target + '.dll'), ($Target + $OutputSuffix + '.dll')) }
 cmd.exe /d /s /c $OracleCommand
 if ($LASTEXITCODE -ne 0) { throw 'Accuracy oracle build failed' }

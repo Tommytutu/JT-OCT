@@ -105,7 +105,10 @@ class ContractOptions:
     gpu_fused_join: bool = True
     state_screen: bool = True
     similarity_refs: int = 0
+    similarity_global: bool = False
     native_d3: bool = False
+    native_parent_bounds: bool = False
+    parent_bound_seconds: float = 60.
 
 
 def automatic_contract_configuration(n, features, classes, depth, options=None,
@@ -152,6 +155,7 @@ class PricingState:
         self.domain = Domain(p, tail_depth=options.tail_depth)
         self.M, self.F, self.K = self.domain.M, p.F, len(p.labels)
         self.A = self.F + self.K
+        self.root_bounds=np.zeros(self.A)
         counts=[1]
         for _ in range(self.domain.h):counts.append(self.F*counts[-1]+self.K)
         self.counts=counts;self.P=counts[-1]
@@ -182,7 +186,7 @@ class PricingState:
                 if key in known:
                     gid = known[key]; record = self.groups[gid]['record']
                 else:
-                    record = engine.initial(rows,terminal_depth=options.tail_depth)
+                    record = engine.initial(rows,terminal_depth=options.tail_depth,ancestors=zip(used,self.domain.roots[q]))
                     gid = len(self.groups); known[key] = gid
                     self.groups.append(dict(rows=rows, node=self.domain.roots[q], used=used,
                                             record=record, ids=[]))
@@ -295,7 +299,9 @@ class PricingState:
             np.tile(np.arange(self.F*self.A,self.P),(2,1))],axis=1)
         sides = np.take_along_axis(pairs,signatures,axis=1)
         ids = np.stack([q*self.P+signatures[q//2] for q in range(4)],axis=1)
-        return sides.sum(axis=0),ids,sides,pairs
+        roots=sides.sum(axis=0)
+        if costs is self.low:roots=np.maximum(roots,self.root_bounds)
+        return roots,ids,sides,pairs
 
     def min_marginals(self, costs, info=None):
         """Full-domain optimum conditioned on each signature (D4/D5)."""
@@ -304,7 +310,9 @@ class PricingState:
         if self.M!=4:raise ValueError('State min-marginals require two or four clusters')
         sides,pairs=info[2],info[3]
         # Avoid total-minus-local: infeasible signatures may have infinite cost.
-        return np.repeat(pairs+sides[::-1,self.roots],2,axis=0).reshape(-1)
+        values=np.repeat(pairs+sides[::-1,self.roots],2,axis=0).reshape(-1)
+        if costs is self.low:values=np.maximum(values,np.tile(self.root_bounds[self.roots],self.M))
+        return values
 
     def compatible_groups(self, limit, incumbent, low_info, high_info):
         """Prioritize sibling pairs for promising compatible roots; no domain removal."""
@@ -370,13 +378,15 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
         backend,o=selected['backend'],selected['options']
         if o.native_d3:backend='gpu';o=replace(o,resident_gpu=True)
     if backend not in ('cpp','gpu'):raise ValueError('Contracted CG backend must be auto, cpp or gpu')
-    if o.native_d3 and (backend!='gpu' or len(p.labels)!=2 or p.depth not in (4,5) or o.tail_depth!=3):
-        raise ValueError('Native D3 currently requires GPU, two classes, D4/D5 and D3 tails')
+    if o.native_d3 and (backend!='gpu' or not 2<=len(p.labels)<=32 or p.depth not in (4,5) or o.tail_depth!=3):
+        raise ValueError('Native D3 requires GPU, 2..32 classes, D4/D5 and D3 tails')
     if o.gpu_pair_tile<1 or o.gpu_bucket_min<0:raise ValueError('Invalid GPU dispatch options')
     if o.gpu_compact_min_batch<1 or not 0<o.gpu_compact_max_ratio<1:
         raise ValueError('Invalid compact-row profitability thresholds')
     if o.cutoff_node_budget<0:raise ValueError('Nonnegative cutoff node budget required')
     if o.similarity_refs<0:raise ValueError('Nonnegative similarity reference count required')
+    if o.native_parent_bounds and (not o.native_d3 or p.depth!=5 or p.min_leaf!=0 or o.parent_bound_seconds<=0):
+        raise ValueError('Parent bounds require native D5, min_leaf=0 and a positive preparation budget')
     screen_states=bool(o.state_screen and p.depth in (4,5) and o.tail_depth==3 and
         o.cost_mode=='lazy' and o.master_mode=='cg' and not o.suppress_jt_certificate)
     if o.similarity_refs and (p.depth not in (4,5) or o.tail_depth!=3 or
@@ -527,6 +537,36 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
                         accept(candidate,'D3_beam');publish()
                     stats['warm_roots_completed'] += 1
             stats['warm_seconds'] += time.perf_counter()-t
+        if o.native_parent_bounds:
+            # One-feature D3 optima are valid references for every two-feature
+            # terminal subset. Their cardinality differences are O(1) to use.
+            # This prices a shallow layer first; the final master and its full
+            # separator domain are unchanged.
+            tick=time.perf_counter();stop=tick+min(o.parent_bound_seconds,clock.remaining()*.25)
+            parents={(f,s):p.route(p.all_rows,f,s) for f in range(p.F) for s in (0,1)}
+            order=sorted(range(p.F),key=lambda f:-min(len(parents[f,0]),len(parents[f,1])))
+            records={key:engine.initial(rows,terminal_depth=3) for key,rows in parents.items()}
+            whole=engine.cache.get(p.all_rows.mask)
+            d4_upper=whole.upper if whole else p.best_label_and_loss(p.all_rows)[1]
+            jobs=[(f,s) for f in order if p.penalty+records[f,0].lower+records[f,1].lower<d4_upper-1e-9 for s in (0,1)]
+            priced=0
+            for start in range(0,len(jobs),16):
+                if time.perf_counter()>=stop:break
+                selected=jobs[start:start+16]
+                answers=engine.terminal_many([(parents[f,s],(s,),(f,)) for f,s in selected],kind='warm')
+                for key,answer in zip(selected,answers):
+                    records[key]=answer;engine.parent_bounds[key]=(len(parents[key]),answer.lower)
+                priced+=len(selected);stats['parent_reference_states']=priced;publish()
+            for f in range(p.F):
+                if (f,0) in records and (f,1) in records:
+                    l,r=records[f,0],records[f,1]
+                    if l.tree and r.tree and p.penalty+l.upper+r.upper<best-1e-12:
+                        accept(Tree(feature=f,left=l.tree,right=r.tree),'D4_reference')
+            stats['parent_reference_seconds']=time.perf_counter()-tick
+            stats['parent_reference_complete']=int(len(records)==2*p.F and all(a.exact for a in records.values()))
+            stats['reference_D4_LB']=min(p.best_label_and_loss(p.all_rows)[1],
+                min(p.penalty+records[f,0].lower+records[f,1].lower for f in range(p.F)))
+            stats['reference_D4_UB']=min(d4_upper,min(p.penalty+records[f,0].upper+records[f,1].upper for f in range(p.F)))
         if o.tail_depth==2:
             old=engine
             engine=TerminalMessages(p,backend,o.threads,opt,clock,stats,terminal_depth=2)
@@ -539,9 +579,22 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
         stats['metadata_seconds'] = time.perf_counter()-t
         stats['candidate_slots'] = state.N;stats['terminal_contexts'] = int(np.count_nonzero(state.private>=0))
         stats['unique_terminal_states'] = len(state.groups)
+        if o.native_parent_bounds:
+            reference=stats['reference_D4_LB']
+            for f in range(p.F):
+                sizes=[len(p.route(p.all_rows,f,s)) for s in (0,1)]
+                state.root_bounds[f]=p.penalty+sum(max(0.,reference-(p.n-count)*p._uniform_weight-1e-12) for count in sizes)
+            if np.any(state.root_bounds>state.messages(state.high)[0]+1e-8):
+                raise AssertionError('D4 reference root lower bound exceeds a feasible D5 tree')
         if tree is None: raise ValueError('No feasible initialization; choose a feasible minimum leaf size')
         initial = state.inject(tree);active = np.zeros(state.N,dtype=bool)
         stats['initial_exact_terminal_states']=sum(g['record'].exact for g in state.groups)
+        if o.similarity_refs and o.similarity_global:
+            # Ancestors are constant on their routed domain. Contracting their
+            # redundant tests permits reuse across ancestor identities when
+            # there is no minimum-leaf constraint (validated above).
+            similarity_bank[()]=[(mask,record.lower) for mask,record in engine.cache.items()
+                                 if record.exact][-o.similarity_refs:]
         if o.native_d3 and engine.workspace.native_accuracy is not None:
             engine.workspace.native_accuracy.prefetch(
                 [g['rows'] for g in state.groups if not g['record'].exact],clock.remaining())
@@ -863,10 +916,11 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
                 tick=time.perf_counter();improved=False
                 for gid in gids:
                     g=state.groups[gid]
-                    key=tuple(sorted(g['used'])) if p.no_repeat else ()
+                    key=tuple(sorted(g['used'])) if p.no_repeat and not o.similarity_global else ()
                     refs=similarity_bank.get(key,[])
                     old=g['record'];lower=old.lower
                     for mask,value in refs:
+                        if value-max(0,mask.bit_count()-len(g['rows']))*p._uniform_weight<=lower:continue
                         lower=max(lower,value-(mask & ~g['rows'].mask).bit_count()*p._uniform_weight)
                     stats['similarity_comparisons']+=len(refs)
                     if lower>old.lower+1e-10:
@@ -909,7 +963,7 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
                 group=state.groups[gid];before=group['record'].upper
                 affected=state.update_group(gid,answer)
                 if o.similarity_refs and answer.exact:
-                    key=tuple(sorted(group['used'])) if p.no_repeat else ()
+                    key=tuple(sorted(group['used'])) if p.no_repeat and not o.similarity_global else ()
                     bank=similarity_bank.setdefault(key,[])
                     bank.append((group['rows'].mask,answer.lower))
                     del bank[:-o.similarity_refs]
