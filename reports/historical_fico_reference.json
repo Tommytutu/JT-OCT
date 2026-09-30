@@ -1,0 +1,62 @@
+[
+  {
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\fico_D4_L0.0\\result.json",
+    "case": "fico_D4_L0.0",
+    "status": "OPT",
+    "call": 2.7533858000242617,
+    "seconds": 2.679608400008874,
+    "UB": 0.27603021321350013,
+    "d3_seconds": 2.6298594000982276,
+    "gpu_seconds": 2.02651490006247,
+    "metadata_seconds": 0.09523150001768978,
+    "rmp_seconds": 0.0015561000036541373,
+    "d3_calls": 316,
+    "rmp_solves": 6,
+    "gpu_compute_and_join_seconds": 2.0335225001035764
+  },
+  {
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\fico_D4_L0.01\\result.json",
+    "case": "fico_D4_L0.01",
+    "status": "OPT",
+    "call": 2.22013479997986,
+    "seconds": 2.1577082999865524,
+    "UB": 0.3172559518118365,
+    "d3_seconds": 2.1236753998673588,
+    "gpu_seconds": 1.5609315999900022,
+    "metadata_seconds": 0.09686289998353449,
+    "rmp_seconds": 0.0014192000380717218,
+    "d3_calls": 309,
+    "rmp_solves": 6,
+    "gpu_compute_and_join_seconds": 1.5674319999234316
+  },
+  {
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\fico_D5_L0.0\\result.json",
+    "case": "fico_D5_L0.0",
+    "status": "OPT",
+    "call": 256.6133805999998,
+    "seconds": 256.50999369999045,
+    "UB": 0.26493928673869377,
+    "d3_seconds": 241.78004160176872,
+    "gpu_seconds": 219.1273318002137,
+    "metadata_seconds": 13.629391800146502,
+    "rmp_seconds": 7.86992980010109,
+    "d3_calls": 44473,
+    "rmp_solves": 169,
+    "gpu_compute_and_join_seconds": 219.8291743008091
+  },
+  {
+    "source": "D:\\论文高\\LP_OCT\\LP_OCT_latest\\code\\reports\\diagnostics\\all11_d4_d5_auto_20260919\\fico_D5_L0.01\\result.json",
+    "case": "fico_D5_L0.01",
+    "status": "OPT",
+    "call": 156.37638359999983,
+    "seconds": 156.2752857999876,
+    "UB": 0.3172559518118365,
+    "d3_seconds": 143.42298519823575,
+    "gpu_seconds": 127.8885928003011,
+    "metadata_seconds": 11.740489899558934,
+    "rmp_seconds": 7.034481099923141,
+    "d3_calls": 37762,
+    "rmp_solves": 148,
+    "gpu_compute_and_join_seconds": 128.40115669951874
+  }
+]

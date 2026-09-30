@@ -1,0 +1,20 @@
+{
+  "command": "python -m unittest discover -s tests -v",
+  "tests": 6,
+  "status": "PASS",
+  "tests_passed": [
+    "test_cg_certificates",
+    "test_deadline_and_invalid_ancestor",
+    "test_exhaustive_routed_and_whole",
+    "test_legacy_cpu_regression",
+    "test_multiple_mask_words",
+    "test_prefetch_deadline_and_no_cache"
+  ],
+  "terminal_exhaustive_cases": 324,
+  "full_cg_exhaustive_cases": 4,
+  "legacy_cpu_cases": 1,
+  "additional_cases": "Deadline, invalid ancestor, cache-free/background preparation, multiple 64-bit mask words",
+  "extracted_helpers_ast": "Exactly identical to base implementation",
+  "f1_original_files": "No edits; tracked verification in f1_unchanged_verification.json",
+  "base_git_commit": "79297579a640d9db1753f3b6d11db062990a7d21"
+}

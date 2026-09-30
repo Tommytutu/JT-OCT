@@ -1,0 +1,5 @@
+# Preserve vendored source bytes for the recorded upstream SHA256 values.
+native/general_jt/*.hpp -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Keep the newly benchmarked bridge sources byte-stable on Windows checkouts.
+native/accuracy_oracle.cpp text eol=lf
+jt_oct/accuracy_oracle.py text eol=lf

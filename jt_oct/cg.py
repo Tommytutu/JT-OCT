@@ -40,32 +40,7 @@ class CGOptions:
     adaptive_admission: bool = False
 
 
-def greedy_feasible(p, deadline):
-    """Deterministic feasible initializer, without calling exact tree optimization."""
-    def rec(node, rows, used):
-        deadline.check()
-        label, stop_loss = p.best_label_and_loss(rows)
-        stop = Tree(label=label) if len(rows) >= p.min_leaf else None
-        if len(node) == p.depth:
-            return stop
-        choices = []
-        for f in p.features(node, used):
-            children = [p.route(rows, f, b) for b in (0, 1)]
-            if any(len(rs) < p.min_leaf for rs in children):
-                continue
-            score = p.cost(node, f) + sum(p.best_label_and_loss(rs)[1] for rs in children)
-            choices.append((score, f, children))
-        # For complete trees splitting is mandatory; for sparse trees one-step
-        # non-improvement returns a stop. Exact CG subsequently escapes XOR traps.
-        if p.early_stop and stop is not None and (not choices or min(choices)[0] >= stop_loss):
-            return stop
-        for _, f, children in sorted(choices):
-            l = rec(node+(0,), children[0], used+(f,))
-            r = rec(node+(1,), children[1], used+(f,))
-            if l is not None and r is not None:
-                return Tree(feature=f, left=l, right=r)
-        return stop if p.early_stop else None
-    return rec((), p.all_rows, ())
+from .solver_common import greedy_feasible
 
 
 def prefix_lower_bound(domain, i, rho, allocated_cost, alpha, pi):

@@ -1,0 +1,14 @@
+{
+  "all_unchanged": true,
+  "checks": {
+    "run_f1_cc.py": true,
+    "run_cm_cpp.py": true,
+    "jt_oct/_native/cm_cc_f1.dll": true,
+    "jt_oct/_native/cm_generic_d4.dll": true,
+    "jt_oct/_native/cm_generic_d5.dll": true,
+    "native/cm5_common.hpp": true,
+    "native/cm_mcc_gpu.hpp": true,
+    "native/cm_shallow_linear.hpp": true,
+    "native/cm_weighted_support.hpp": true
+  }
+}

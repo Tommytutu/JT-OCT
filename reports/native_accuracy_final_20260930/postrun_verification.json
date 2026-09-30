@@ -1,0 +1,28 @@
+{
+  "all_source_and_binary_hashes_unchanged": true,
+  "completed_runs": 24,
+  "all_gaps_at_most_1e_7": true,
+  "checks": {
+    "legacy:run.py": true,
+    "legacy:jt_oct/contract_cg.py": true,
+    "legacy:jt_oct/d3_optimized.py": true,
+    "legacy:jt_oct/_native/contract_rmp.dll": true,
+    "native:run.py": true,
+    "native:jt_oct/contract_cg.py": true,
+    "native:jt_oct/d3_optimized.py": true,
+    "native:jt_oct/_native/contract_rmp.dll": true,
+    "native:jt_oct/accuracy_oracle.py": true,
+    "native:native/accuracy_oracle.cpp": true,
+    "native:jt_oct/_native/accuracy_oracle.dll": true,
+    "cc_f1:run_f1_cc.py": true,
+    "cc_f1:run_cm_cpp.py": true,
+    "cc_f1:jt_oct/_native/cm_cc_f1.dll": true,
+    "cc_f1:jt_oct/_native/cm_generic_d4.dll": true,
+    "cc_f1:jt_oct/_native/cm_generic_d5.dll": true,
+    "f1:run_f1_cc.py": true,
+    "f1:run_cm_cpp.py": true,
+    "f1:jt_oct/_native/cm_cc_f1.dll": true,
+    "f1:jt_oct/_native/cm_generic_d4.dll": true,
+    "f1:jt_oct/_native/cm_generic_d5.dll": true
+  }
+}

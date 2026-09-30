@@ -22,10 +22,16 @@ def main():
     parser.add_argument('--depth', required=True, type=int, choices=(2,3,4,5))
     parser.add_argument('--penalty', type=float, choices=(0.0,0.01), default=0.0)
     parser.add_argument('--seconds', type=float, default=600.0)
+    parser.add_argument('--d3-oracle', choices=('legacy','native'), default='legacy')
+    parser.add_argument('--threads', type=int, help='Override the deep oracle CPU worker count')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if args.seconds <= 0:
         parser.error('--seconds must be positive')
+    if args.d3_oracle=='native' and (args.method!='JT-CG' or args.depth<4):
+        parser.error('--d3-oracle native currently applies to JT-CG D4/D5')
+    if args.threads is not None and (not 1<=args.threads<=64 or args.depth<4 or args.method=='JT-LP'):
+        parser.error('--threads requires JT-CG/JT-MP D4/D5 and a value from 1 to 64')
     if args.output.exists():
         parser.error('output already exists; choose a new filename')
     configs = cg_configs if args.method=='JT-CG' else [c for c in other_configs if c['method']==args.method]
@@ -71,6 +77,13 @@ def main():
                 result=solve_jt_dp_shallow_cpp(problem,args.seconds,options=options,threads=threads)
         else:
             options=ContractOptions(**job['options'])
+            if args.threads is not None:
+                from dataclasses import replace
+                if args.threads<1:parser.error('--threads must be positive')
+                options=replace(options,threads=args.threads)
+            if args.d3_oracle=='native':
+                from dataclasses import replace
+                options=replace(options,native_d3=True)
             backend='auto' if args.method=='JT-CG' else job['backend']
             if args.method=='JT-MP':
                 assert options.master_mode=='message' and options.cost_mode=='lazy'
@@ -80,6 +93,9 @@ def main():
     result.update(requested_method=args.method,dataset=args.dataset,depth=args.depth,
                   penalty=args.penalty,time_limit=args.seconds,
                   call_wall_seconds=time.perf_counter()-started,configuration=job)
+    result['d3_oracle']=args.d3_oracle
+    if args.depth>=4 and args.method!='JT-LP':
+        result['effective_configuration']=result.get('stats',{}).get('options',{})
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(result,indent=2,ensure_ascii=False),encoding='utf-8')
     print(json.dumps({k:result.get(k) for k in

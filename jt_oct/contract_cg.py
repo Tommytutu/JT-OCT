@@ -15,11 +15,11 @@ import time
 
 import numpy as np
 
-from .cg import greedy_feasible
+from .solver_common import greedy_feasible
 from .domain import Column, Domain, SPLIT, STOP, CapacityExceeded
 from .d3_grow import _frontier_paths, _prefix_state, _replace
 from .problem import Deadline, DeadlineExceeded, Tree, evaluate
-from .solvers import result_dict
+from .solver_common import result_dict
 from .terminal_message import TerminalMessages, TerminalOptions, Interval
 
 _LIB = None
@@ -105,6 +105,7 @@ class ContractOptions:
     gpu_fused_join: bool = True
     state_screen: bool = True
     similarity_refs: int = 0
+    native_d3: bool = False
 
 
 def automatic_contract_configuration(n, features, classes, depth, options=None,
@@ -120,8 +121,8 @@ def automatic_contract_configuration(n, features, classes, depth, options=None,
     delayed=bool(int(depth)==5 and int(classes)==2 and
                  int(features)>=100 and int(n)<100000)
     return dict(backend='gpu' if use_gpu else 'cpp',options=replace(o,
-        resident_gpu=use_gpu,oracle_batch=64 if use_gpu else 16,
-        rmp_every_batches=4 if delayed else 1,class_bound=int(classes)>2))
+        resident_gpu=use_gpu,oracle_batch=(256 if o.native_d3 and delayed else 64) if use_gpu else 16,
+        rmp_every_batches=(8 if o.native_d3 else 4) if delayed else 1,class_bound=int(classes)>2))
 
 
 def _capacity_batch(ids, reduced_cost, active_count, limit, blocks, block_size):
@@ -358,11 +359,19 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
     o = options or ContractOptions()
     automatic = backend=='auto'
     if automatic:
-        from .auto_dp import hardware
+        if o.native_d3:
+            # Explicit native requests require CUDA; its driver reports errors.
+            available=True
+        else:
+            from .auto_dp import hardware
+            available=hardware()['gpu_available']
         selected=automatic_contract_configuration(p.n,p.F,len(p.labels),p.depth,o,
-            hardware()['gpu_available'])
+            available)
         backend,o=selected['backend'],selected['options']
+        if o.native_d3:backend='gpu';o=replace(o,resident_gpu=True)
     if backend not in ('cpp','gpu'):raise ValueError('Contracted CG backend must be auto, cpp or gpu')
+    if o.native_d3 and (backend!='gpu' or len(p.labels)!=2 or p.depth not in (4,5) or o.tail_depth!=3):
+        raise ValueError('Native D3 currently requires GPU, two classes, D4/D5 and D3 tails')
     if o.gpu_pair_tile<1 or o.gpu_bucket_min<0:raise ValueError('Invalid GPU dispatch options')
     if o.gpu_compact_min_batch<1 or not 0<o.gpu_compact_max_ratio<1:
         raise ValueError('Invalid compact-row profitability thresholds')
@@ -398,6 +407,7 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
         raise ValueError('Invalid cost kernel or bundle share')
     if o.memory_limit_bytes<1:raise ValueError('Positive memory limit required')
     clock = Deadline(time_limit); name = f'JT-CG-D{o.tail_depth}Tail-'+backend.upper()
+    if o.native_d3:name+='-Native'
     if o.master_mode=='message':
         name=('Exact-cost-MP-' if o.cost_mode=='eager' else 'Adaptive-MP-')+backend.upper()
     stats = defaultdict(int); stats.update(backend=backend, options=asdict(o),automatic_backend=automatic)
@@ -461,6 +471,8 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
             class_capacity_bound=o.class_bound)
         engine = TerminalMessages(p,backend,o.threads,opt,clock,stats)
         engine.workspace.options=replace(engine.workspace.options,
+            native_accuracy=o.native_d3,
+            native_geometry_bytes=min(3*1024**3,o.memory_limit_bytes//4),
             gpu_native_metadata=o.native_metadata,gpu_metadata_cache_entries=o.metadata_cache_entries,
             gpu_sync_tiles=o.gpu_sync_tiles,gpu_pipeline_chunk=o.gpu_pipeline_chunk,
             gpu_cost_strategy=o.cost_kernel,gpu_compact_rows=o.gpu_compact_rows,
@@ -530,6 +542,9 @@ def solve_contracted_cg(p, backend='auto', time_limit=60, options=None, progress
         if tree is None: raise ValueError('No feasible initialization; choose a feasible minimum leaf size')
         initial = state.inject(tree);active = np.zeros(state.N,dtype=bool)
         stats['initial_exact_terminal_states']=sum(g['record'].exact for g in state.groups)
+        if o.native_d3 and engine.workspace.native_accuracy is not None:
+            engine.workspace.native_accuracy.prefetch(
+                [g['rows'] for g in state.groups if not g['record'].exact],clock.remaining())
         if o.cost_mode=='eager':
             tick=time.perf_counter()
             pending=[j for j,g in enumerate(state.groups) if not g['record'].exact]

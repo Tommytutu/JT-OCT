@@ -49,17 +49,7 @@ PRESETS={
 }
 
 
-def conflict_representatives(p):
-    # Binary row signatures preserve equality while reducing sort-key width 8x.
-    _,reps,inverse=np.unique(np.packbits(p.X,axis=1),axis=0,return_index=True,return_inverse=True)
-    total=np.bincount(inverse,minlength=len(reps))
-    majority=np.zeros(len(reps),dtype=np.int64)
-    for label in p.labels:
-        count=np.bincount(inverse[p.y==label],minlength=len(reps))
-        np.maximum(majority,count,out=majority)
-    mass=total-majority
-    chosen=mass>0
-    return np.ascontiguousarray(np.column_stack((reps[chosen],mass[chosen])),dtype=np.int32)
+from .solver_common import conflict_representatives
 
 
 def root_information(p,conflict):

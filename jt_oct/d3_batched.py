@@ -23,7 +23,7 @@ from pathlib import Path
 import numpy as np
 
 from .problem import Deadline, DeadlineExceeded, Tree, evaluate
-from .solvers import result_dict
+from .solver_common import result_dict
 
 
 _CUDA_DLL_HANDLES = []

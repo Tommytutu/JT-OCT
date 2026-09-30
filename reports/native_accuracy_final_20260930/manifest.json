@@ -1,0 +1,53 @@
+{
+  "python": "D:\\\u8bba\u6587\u9ad8\\General JT\\JT-CM\\.venv\\Scripts\\python.exe",
+  "python_version": "3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:17:27) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "gpu": "NVIDIA GeForce RTX 4080 SUPER, 595.95, 16376 MiB",
+  "dataset_sha256": {
+    "legacy": "6c97fbe160404e9450b898e8c08881cc9ee8d51ce91be76c3237c5525cb7aa72",
+    "native": "6c97fbe160404e9450b898e8c08881cc9ee8d51ce91be76c3237c5525cb7aa72",
+    "cc_f1": "6c97fbe160404e9450b898e8c08881cc9ee8d51ce91be76c3237c5525cb7aa72",
+    "f1": "6c97fbe160404e9450b898e8c08881cc9ee8d51ce91be76c3237c5525cb7aa72"
+  },
+  "sources": {
+    "legacy": {
+      "run.py": "fa2af7410e2e1ec9a3cfa44d15c7b186517c909d9ab9b537c9c1b236d5e00f56",
+      "jt_oct/contract_cg.py": "cd2f42c9d7dc3754fcf3cb4834154e41decde846bc9e6783c2d6b2f51f3c3171",
+      "jt_oct/d3_optimized.py": "75ea3272db816df14d258a167eaf1516f03ceb35be2d1f5c31cbede5416609a9",
+      "jt_oct/_native/contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f"
+    },
+    "native": {
+      "run.py": "a2478bd455dd01e48dba1bd7ba42b9f032e9fc3d46429687aa93b0e817bb0434",
+      "jt_oct/contract_cg.py": "7f26273cd01d73e1f33c656c1765d99dda431c93ed6f261c0094bfca8fe7ddef",
+      "jt_oct/d3_optimized.py": "50e7f1b0888ba76e3d18fda661c206337c24722e4ddf0775f3d5e8e4acc85d5d",
+      "jt_oct/_native/contract_rmp.dll": "b5cdb2f0eb83cb6f9d8cceefbd30a2aee54515cfaf86e2e335206175fa3db52f",
+      "jt_oct/accuracy_oracle.py": "2bbae148164066acf3dc6107c17b26134455c4823219c7beece10b10737e56c5",
+      "native/accuracy_oracle.cpp": "d95c2af671e95900de891048a917581f312b121bb8e21e27017b87672031066b",
+      "jt_oct/_native/accuracy_oracle.dll": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004"
+    },
+    "cc_f1": {
+      "run_f1_cc.py": "7e8d56d228d658562c104f7a714566bc5b4bc568eade11f95ad1d7a8d83407f9",
+      "run_cm_cpp.py": "3725389053828ead6a9869c46eed344c2093d07fd1eeee50f4b3ea9e29212b99",
+      "jt_oct/_native/cm_cc_f1.dll": "f6655ebd139e24ffa5cee0a80bfaf8f59e30b07f0439d3dcd9a6f9d3c9e637ad",
+      "jt_oct/_native/cm_generic_d4.dll": "4fdc9f5bf21ef353949df35a59a265ffecb7f62c87658af1b44322a18afb50f1",
+      "jt_oct/_native/cm_generic_d5.dll": "46a7a04f8da5c29f61d330a4c3c2aad1c07855347688a99e941249d79c0605ac"
+    },
+    "f1": {
+      "run_f1_cc.py": "7e8d56d228d658562c104f7a714566bc5b4bc568eade11f95ad1d7a8d83407f9",
+      "run_cm_cpp.py": "3725389053828ead6a9869c46eed344c2093d07fd1eeee50f4b3ea9e29212b99",
+      "jt_oct/_native/cm_cc_f1.dll": "f6655ebd139e24ffa5cee0a80bfaf8f59e30b07f0439d3dcd9a6f9d3c9e637ad",
+      "jt_oct/_native/cm_generic_d4.dll": "4fdc9f5bf21ef353949df35a59a265ffecb7f62c87658af1b44322a18afb50f1",
+      "jt_oct/_native/cm_generic_d5.dll": "46a7a04f8da5c29f61d330a4c3c2aad1c07855347688a99e941249d79c0605ac"
+    }
+  },
+  "threads": 8,
+  "time_limit": 600,
+  "repeats": 2,
+  "timing": "Fresh process wall time from launch through exit; sequential, no overlapping solvers; existing driver disk caches allowed",
+  "min_leaf": {
+    "legacy": 0,
+    "native": 0,
+    "cc_f1": 1,
+    "f1": 1
+  }
+}

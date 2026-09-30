@@ -13,11 +13,11 @@ import time
 
 import numpy as np
 
-from .cg import greedy_feasible
+from .solver_common import greedy_feasible
 from .d3_optimized import D3Workspace,D3Options
-from .message_plus import conflict_representatives
+from .solver_common import conflict_representatives
 from .problem import Deadline,DeadlineExceeded,Tree,evaluate
-from .solvers import result_dict
+from .solver_common import result_dict
 
 
 @dataclass(frozen=True)

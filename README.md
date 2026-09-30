@@ -63,6 +63,9 @@ python run.py --method JT-MP --dataset banknote --depth 4 --penalty 0.01 --outpu
 The bundled command line uses the recorded configuration for the selected
 dataset, depth, penalty, and method.
 
+Binary D4/D5 JT-CG also has an optional native accuracy-pricing service:
+add `--d3-oracle native`. See [build instructions and validation](README_NATIVE_ACCURACY.md).
+
 For reproducible timings, the runner defaults `OMP_NUM_THREADS`,
 `MKL_NUM_THREADS`, and `OPENBLAS_NUM_THREADS` to `1` and preloads the depth-4/5
 contracted backend before preparing the dataset. Existing environment-variable

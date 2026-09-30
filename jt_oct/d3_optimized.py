@@ -14,7 +14,7 @@ import numpy as np
 
 from .d3_batched import _configure_cupy_runtime, _pack_words64
 from .problem import Deadline, DeadlineExceeded, RowSet, Tree
-from .solvers import result_dict
+from .solver_common import result_dict
 
 ROOT=Path(__file__).resolve().parents[1]
 INF=1e300
@@ -46,6 +46,8 @@ class D3Options:
     gpu_pair_tile: int = 4096
     gpu_bucket_min: int = 8
     gpu_fused_join: bool = True
+    native_accuracy: bool = False
+    native_geometry_bytes: int = 3*1024**3
 
 
 PRESETS={'core':D3Options(stop_bounds=False,compact_features=False),
@@ -81,11 +83,13 @@ class D3Workspace:
         self.last_pack_key=None
         self.prepare_lib=None
         self.resident=None
+        self.native_accuracy=None
         self.Wmax=max(1,(p.n+63)//64)
         self.class_masks=tuple(p._label_masks[k] for k in p.labels)
         self.positive_mask=p._label_masks[p.labels[-1]] if len(p.labels)==2 else 0
 
     def close(self):
+        if self.native_accuracy is not None:self.native_accuracy.close()
         if self.resident is not None:self.resident.close()
         if self.handle:
             self.lib.d3_opt_free(self.handle);self.handle=None
@@ -243,7 +247,7 @@ class D3Workspace:
     def solve(self,rows=None,used=(),node=(),time_limit=100,audit=None,depth=3):
         if self.closed:raise RuntimeError('D3 workspace is closed')
         if depth not in (2,3):raise ValueError('Shallow messages require depth 2 or 3')
-        if self.backend=='gpu' and (self.options.gpu_resident or len(self.p.labels)>2 or depth==2):
+        if self.options.native_accuracy or (self.backend=='gpu' and (self.options.gpu_resident or len(self.p.labels)>2 or depth==2)):
             return self.solve_many([dict(rows=self.p.all_rows if rows is None else rows,used=used,node=node)],
                                    time_limit=time_limit,depth=depth,audit=audit)[0]
         p,o=self.p,self.options
@@ -432,6 +436,17 @@ class D3Workspace:
     def solve_many(self,requests,time_limit=100,depth=3,audit=None):
         """Solve a bounded batch of independent messages against resident data."""
         if self.closed:raise RuntimeError('D3 workspace is closed')
+        if self.options.native_accuracy:
+            if self.backend!='gpu':raise ValueError('Native accuracy requires the GPU backend')
+            if self.options.native_geometry_bytes<0:raise ValueError('Nonnegative native geometry cache size required')
+            tick=time.perf_counter()
+            if self.native_accuracy is None:
+                from .accuracy_oracle import NativeAccuracyOracle
+                self.native_accuracy=NativeAccuracyOracle(self)
+            setup=time.perf_counter()-tick
+            outputs=self.native_accuracy.solve_many(requests,max(0.,time_limit-setup),depth,audit)
+            if outputs:outputs[0]['timings']['backend_setup_seconds']=setup
+            return outputs
         if self.backend!='gpu':
             clock=Deadline(time_limit)
             return [self.solve(**r,time_limit=max(0,clock.end-time.perf_counter()),audit=audit,depth=depth) for r in requests]

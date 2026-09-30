@@ -9,20 +9,7 @@ from .domain import Domain, CapacityExceeded
 from .master import solve_rmp, build_matrix, chain_path, chain_path_streaming
 
 
-def result_dict(method, deadline, status, tree=None, p=None, lb=0.0, **extra):
-    metrics = evaluate(p, tree) if tree is not None else {}
-    ub = metrics.get("objective", math.inf)
-    raw_lb = lb
-    lb = max(0.0, lb)  # Loss and split costs are nonnegative by construction.
-    if tree is not None:
-        if lb > ub + 1e-7:
-            raise AssertionError("Certified LB exceeds actual routed UB")
-        lb = min(lb, ub)  # Roundoff only; substantial violations raise above.
-    return {"method": method, "status": status, "seconds": deadline.elapsed(),
-            "LB": lb, "raw_LB": raw_lb, "UB": ub,
-            "absolute_gap": max(0.0, ub-lb) if math.isfinite(ub) else None,
-            "gap": max(0.0, ub-lb)/max(1e-10, abs(ub)) if math.isfinite(ub) else None,
-            "tree": tree.to_dict() if tree else None, "metrics": metrics, **extra}
+from .solver_common import result_dict
 
 
 def solve_jt_dp(domain, time_limit=600, max_columns=200000):

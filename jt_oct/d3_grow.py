@@ -18,7 +18,7 @@ import time
 
 from .d3_optimized import D3Options, D3Workspace
 from .problem import Deadline, DeadlineExceeded, Tree, evaluate
-from .solvers import result_dict
+from .solver_common import result_dict
 
 
 @dataclass(frozen=True)

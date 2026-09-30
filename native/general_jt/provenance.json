@@ -1,0 +1,26 @@
+{
+  "cm5_common.hpp": {
+    "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm5_common.hpp",
+    "upstream_sha256": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab",
+    "vendored_sha256": "c75d91949e79e4d5632629785848e0f7b063d555552ca6d337b533af6052a2ab"
+  },
+  "cm_mcc_gpu.hpp": {
+    "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm_mcc_gpu.hpp",
+    "upstream_sha256": "e026d7cc24f3b0b679dd55889416c08e370f2113b1c4712f69c820ee33bde109",
+    "vendored_sha256": "28d0d755eeed15323462a7c72249cfb29b68050ec7e7fd5e0f638cd06328c2c9"
+  },
+  "cm_shallow_linear.hpp": {
+    "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm_shallow_linear.hpp",
+    "upstream_sha256": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2",
+    "vendored_sha256": "9da9636fca282c1e9b031c9cc25638b65bd98bee210de55bdc90a75ffae49fb2"
+  },
+  "cm_weighted_support.hpp": {
+    "upstream": "D:\\论文高\\General JT\\JT-CM\\native\\cm_weighted_support.hpp",
+    "upstream_sha256": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2",
+    "vendored_sha256": "aab19e13693a92c238c32af3b35f1deada49956f88ff6eac65cdfb31b73c05c2"
+  },
+  "dll": {
+    "path": "jt_oct/_native/accuracy_oracle.dll",
+    "sha256": "f2e712c68417248e3059c08c319191849e7bb547f40eb39f0185e7e52001e004"
+  }
+}

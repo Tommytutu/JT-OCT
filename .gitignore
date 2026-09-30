@@ -9,3 +9,4 @@ __pycache__/
 results/
 gurobi.log
 gurobi.lic
+reports/native_accuracy*/raw/
